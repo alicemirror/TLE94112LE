@@ -12,8 +12,6 @@
 #ifndef _FILAMENTWEIGHT
 #define _FILAMENTWEIGHT
 
-#include <HX711.h>
-#include "filament.h"
 #include "commands.h"
 
 #define DOUT 3  // load sensor data pin
@@ -27,10 +25,10 @@
 
 //! Status structure varoab;es amd flags
 struct process {
-  //! The status of the entire process
-  int weightStatus;   
-  //! Flag indicating if the extruder is pulling the filament
-  boolean filamentNeededFromExtruder;
+//  //! The status of the entire process
+//  int weightStatus;   
+//  //! Flag indicating if the extruder is pulling the filament
+//  boolean filamentNeededFromExtruder;
 };
 
 /**
@@ -51,7 +49,7 @@ class FilamentWeight {
     float prevRead;
 
     //! Sensor library instance
-    HX711 scaleSensor;
+//    HX711 scaleSensor;
 
     //! The scale calibration value
     //! If is hardcoded on startup but can be further updated with the
@@ -159,32 +157,30 @@ class FilamentWeight {
     */
     void flashLED(void);
 
-    //! filament diameter (descriptive)
-    String diameter;
-    //! material type (descriptive)
-    String material;
-    //! roll weight (descriptive)
-    String weight;
-    //! system status
-    String stat;
-    //! Status ID
-    int statID;
-    //! grams for 1 cm material
-    float gr1cm;
-    //! centimeters for 1 gr material
-    float length1gr;
-    //! filament weight
-    float rollWeight;
-    //! roll tare
-    float rollTare;
-    //! Initial read weight from last reset
-    float initialWeight;
-    //! Last reliable value for consumed grams
-    float lastConsumedGrams;
-    //! Units display flag. Decide if consume is in grams or cm
-    float filamentUnits;
-    //! Status change LED
-    int ledPin;
+//    //! filament diameter (descriptive)
+//    String diameter;
+//    //! material type (descriptive)
+//    String material;
+//    //! roll weight (descriptive)
+//    String weight;
+//    //! system status
+//    String stat;
+//    //! Status ID
+//    int statID;
+//    //! grams for 1 cm material
+//    float gr1cm;
+//    //! centimeters for 1 gr material
+//    float length1gr;
+//    //! filament weight
+//    float rollWeight;
+//    //! roll tare
+//    float rollTare;
+//    //! Initial read weight from last reset
+//    float initialWeight;
+//    //! Last reliable value for consumed grams
+//    float lastConsumedGrams;
+//    //! Units display flag. Decide if consume is in grams or cm
+//    float filamentUnits;
 
 };
 

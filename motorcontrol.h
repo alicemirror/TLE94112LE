@@ -1,12 +1,11 @@
 /**
  *  \file motorcontrol.h
- *  \brief Arduino class to control Infineon's DC Motor Control Shield with TLE94112
- *  for the 3D printewr filament dispenser
+ *  \brief Arduino class to control Infineon DC Motor Shield with TLE94112
  *  
  *  \author Enrico Miglino <balearicdynamics@gmail.com> \n
  *  Balearic Dynamics sl <www.balearicdynamics.com> SPAIN
  *  \date July 2017
- *  \version 1.0 Release Candidate
+ *  \version 1.0
  *  Licensed under GNU LGPL 3.0 
  */
 
@@ -14,7 +13,6 @@
 #define _MOTORCONTROL
 
 #define _INFINEON_BOARD // "#undef" if not using Infineon XMC1100 Boot Arduino compatible board
-
 #include <TLE94112.h>
 #include "motor.h"
 

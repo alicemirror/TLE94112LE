@@ -48,26 +48,26 @@ void MotorControl::end(void) {
 }
 
 void MotorControl::feedExtruder(long duration) {
-  motorRun(DC_MIN_EXTRUDER, DC_MAX_EXTRUDER, ACCELERATION_DELAY, duration, DIRECTION_FEED);
+//  motorRun(DC_MIN_EXTRUDER, DC_MAX_EXTRUDER, ACCELERATION_DELAY, duration, DIRECTION_FEED);
   motorBrake();
 }
 
 void MotorControl::filamentFeed(long duration) {
-  motorRun(DC_MIN_MANUAL_FFED, DC_MAX_MANUAL_FFED, ACCELERATION_DELAY, duration, DIRECTION_FEED);
+//  motorRun(DC_MIN_MANUAL_FFED, DC_MAX_MANUAL_FFED, ACCELERATION_DELAY, duration, DIRECTION_FEED);
   motorBrake();
 }
 
 void MotorControl::filamentContFeed(void) {
-  motorStart(DC_MIN_MANUAL_FFED, DC_MAX_MANUAL_FFED, ACCELERATION_DELAY, DIRECTION_FEED);
+//  motorStart(DC_MIN_MANUAL_FFED, DC_MAX_MANUAL_FFED, ACCELERATION_DELAY, DIRECTION_FEED);
 }
 
 void MotorControl::filamentLoad(long duration) {
-  motorRun(DC_MIN_MANUAL_LOAD, DC_MAX_MANUAL_LOAD, ACCELERATION_DELAY, duration, DIRECTION_LOAD);
+//  motorRun(DC_MIN_MANUAL_LOAD, DC_MAX_MANUAL_LOAD, ACCELERATION_DELAY, duration, DIRECTION_LOAD);
   motorBrake();
 }
 
 void MotorControl::filamentContLoad(void) {
-  motorStart(DC_MIN_MANUAL_FFED, DC_MAX_MANUAL_FFED, ACCELERATION_DELAY, DIRECTION_LOAD);
+//  motorStart(DC_MIN_MANUAL_FFED, DC_MAX_MANUAL_FFED, ACCELERATION_DELAY, DIRECTION_LOAD);
 }
 
 void MotorControl::motorRun(int minDC, int maxDC, int accdelay, long duration, int motorDirection) {
