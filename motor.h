@@ -14,18 +14,7 @@
 #define _MOTOR
 
 //! Application title shown on startup
-#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.1"
-
-// System status (ID and description)
-#define SYS_READY "Ready"       // System ready
-#define SYS_RUN "Running"       // Filament in use
-#define SYS_LOAD "Loading"         // Roll loaded
-#define SYS_STARTED "Started"   // Application started
-// Status IDs
-#define STAT_NONE 0
-#define STAT_READY 1
-#define STAT_LOAD 2
-#define STAT_RUN 3
+#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.3"
 
 //! For high current coupling half bridges together 1&2, 3&4
 #undef _HIGHCURRENT
@@ -38,8 +27,45 @@
 #define INVERT_DIRECTION_DELAY 300  ///< Delay in ms when the motor should invert direction
 #define ACCELERATION_DELAY 5        ///< Delay between acceleration steps
 
-#define DIRECTION_FEED 1    ///< Motor rotates to release filament
-#define DIRECTION_LOAD 2    ///< Motor rotates to load filament
+#define DIRECTION_CW 1      ///< Clockwise
+#define DIRECTION_CCW 2     ///< Counterclockwise
+
+#define FW_ACTIVE 1     ///< Active freewheeling
+#define FW_PASSIVE 0    ///< Passive freewheeling
+
+#define MOTOR_ENABLED 1
+#define MOTOR_DISABLED 0
+
+#define RAMP_ON 1     ///< Acceleration enabled on start
+#define RAMP_OFF 0    ///< Acceleration disabled on start
+
+#define MOTOR_PWM_ON 1  ///< Motor run with PWM
+#define MOTOR_PWM_OFF 0 ///< Motor runs without PWM
+
+/**
+ * When _HIGHCURRENT is set every motor needs 2+2 half bridges to double the needed power
+ */
+#undef _HIGHCURRENT
+
+#ifdef _HIGHCURRENT
+  //! In high current mode every pole of the motors is connected to two half bridges
+  #define MAX_MOTORS 3
+  //! Calculate the first half bridge number depending
+  //! on the motor number
+  #define calcHB1(x) { (x - 1) * 4 + 1; }
+  //! Calculate the second half bridge number depending
+  //! on the motor number
+  #define calcHB2(x) { (x - 1) * 4 + 3; }
+#else
+  //! In normal current mode every motor uses two half bridges
+  #define MAX_MOTORS 6
+  //! Calculate the first half bridge number depending
+  //! on the motor number
+  #define calcHB1(x) { (x - 1) * 2 + 1; }
+  //! Calculate the first half bridge number depending
+  //! on the motor number
+  #define calcHB2(x) { (x - 1) * 2 + 2; }
+#endif
 
 //! Error title
 #define TLE_ERROR_MSG "TLE94112 Error"

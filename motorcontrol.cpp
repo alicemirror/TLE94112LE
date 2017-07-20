@@ -182,21 +182,21 @@ void MotorControl::motorStart(int minDC, int maxDC, int accdelay, int motorDirec
 
 void MotorControl::motorBrake(void) {
   // If motor is running then it decelerates before stop
-  if(internalStatus.isRunning) {
-    int j;
-    // Deceleration loop  
-    for(j = internalStatus.maxDC; j > internalStatus.minDC; j--) {
-      // Update the speed
-      tle94112.configPWM(tle94112.TLE_PWM1, tle94112.TLE_FREQ200HZ, j);
-    //Check for error
-    if(tleCheckDiagnostic()) {
-      tleDiagnostic();
-    }
-      delay(internalStatus.accdelay);
-    }
-    // Update the motor status
-    internalStatus.isRunning = false;
-  }
+//  if(internalStatus.isRunning) {
+//    int j;
+//    // Deceleration loop  
+//    for(j = internalStatus.maxDC; j > internalStatus.minDC; j--) {
+//      // Update the speed
+//      tle94112.configPWM(tle94112.TLE_PWM1, tle94112.TLE_FREQ200HZ, j);
+//    //Check for error
+//    if(tleCheckDiagnostic()) {
+//      tleDiagnostic();
+//    }
+//      delay(internalStatus.accdelay);
+//    }
+//    // Update the motor status
+////    internalStatus.isRunning = false;
+//  }
 #ifdef _HIGHCURRENT
   // High current configuration, uses HB1&2 + 3&4
   tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_NOPWM);
@@ -219,6 +219,10 @@ boolean MotorControl:: tleCheckDiagnostic(void) {
     return false;
   else
     return true;
+}
+
+void MotorControl::showInfo(void) {
+  Serial.println("Info");  
 }
 
 void MotorControl::tleDiagnostic() {

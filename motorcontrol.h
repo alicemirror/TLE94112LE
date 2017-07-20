@@ -12,19 +12,28 @@
 #ifndef _MOTORCONTROL
 #define _MOTORCONTROL
 
-#define _INFINEON_BOARD // "#undef" if not using Infineon XMC1100 Boot Arduino compatible board
 #include <TLE94112.h>
 #include "motor.h"
 
 /**
- * Internal status of the motor
+ * Internal status of a generic motor
  */
 struct motorStatus {
-  boolean isRunning;
-  int minDC;
-  int maxDC;
-  int accdelay;
-  int motorDirection;
+  boolean useRamp;        ///< Use acceleration/deceleration cycle when starting
+  boolean usePWM;         ///< PWM Enabled for this motor
+  boolean isEnabled;      ///< Motor enabled status
+  boolean isRunning;      ///< Motor running status (should be enabled)
+  boolean freeWheeling;   ///< Free wheeling active or passive
+  int minDC;              ///< Min duty cycle value
+  int maxDC;              ///< Max duty cycle value
+  int accdelay;           ///< Delay in steps (ms) during the acceleration / deceleration ramp
+  int motorDirection;     ///< Current motor direction
+  int hb1;                ///< First half bridge
+  int hb2;                ///< Second half bridge
+#ifdef _HIGHCURRENT
+  int hb1H;               ///< Second first half bridge in High Current
+  int hb2H;               ///< Second second half bridge in High Current
+#endif
 };
 
 /**
@@ -47,9 +56,8 @@ class MotorControl {
     //! \brief stop the motor control
     void end(void);
 
-    //! Status of the motor updated when it runs outside of the control
-    //! of the MotorControl class.
-    motorStatus internalStatus;
+    //! Status of the motors parameters and settings
+    motorStatus internalStatus[MAX_MOTORS];
   
     /**
      * \brief Accelerates to the regime speed for filament release then 
@@ -136,6 +144,11 @@ class MotorControl {
      * \brief Brake the motor keelping the half bridges high
      */
     void motorBrake();
+
+    /** 
+     * \brief Show Current motors configuration
+     */
+     void showInfo(void);
 
     /**
      * Check if an error occured.

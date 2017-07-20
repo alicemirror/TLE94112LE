@@ -39,6 +39,9 @@ void setup() {
   // initialize the motor class
   motor.begin();  
   modeAuto = false;
+
+  flashLED();
+
 }
 
 // ==============================================
@@ -52,11 +55,11 @@ void setup() {
 void loop() {
 
   // Check if the motor is running to test the error status
-  if(motor.internalStatus.isRunning) {
-    if(motor.tleCheckDiagnostic()) {
-      motor.tleDiagnostic();
-    }
-  }
+//  if(motor.internalStatus.isRunning) {
+//    if(motor.tleCheckDiagnostic()) {
+//      motor.tleDiagnostic();
+//    }
+//  }
 
   if(Serial.available() > 0){
     parseCommand(Serial.readString());
@@ -94,8 +97,8 @@ void serialMessage(String title, String description) {
   // Informative commands
   // =========================================================
 
-  if(commandString.equals(SHOW_INFO)) {
-//    motor.showInfo();
+  if(commandString.equals(SHOW_CONF)) {
+    motor.showInfo();
   }
 
   // =========================================================
