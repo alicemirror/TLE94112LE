@@ -14,7 +14,7 @@
 #define _MOTOR
 
 //! Application title shown on startup
-#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.4"
+#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.5"
 
 //! For high current coupling half bridges together 1&2, 3&4
 #undef _HIGHCURRENT
@@ -32,6 +32,9 @@
 
 #define MOTOR_FW_ACTIVE true       ///< Active freewheeling
 #define MOTOR_FW_PASSIVE false     ///< Passive freewheeling
+
+#define MOTOR_MANUAL_DC true      ///< Manual motor duty cycle target control
+#define MOTOR_AUTO_DC false       ///< Motor duty cycle based on the internal settings
 
 #define MOTOR_ENABLED 1
 #define MOTOR_DISABLED 0

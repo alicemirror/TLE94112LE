@@ -24,9 +24,9 @@ struct motorStatus {
   boolean isEnabled;      ///< Motor enabled status
   boolean isRunning;      ///< Motor running status (should be enabled)
   boolean freeWheeling;   ///< Free wheeling active or passive
-  int minDC;              ///< Min duty cycle value
-  int maxDC;              ///< Max duty cycle value
-  int accdelay;           ///< Delay in steps (ms) during the acceleration / deceleration ramp
+  uint8_t minDC;              ///< Min duty cycle value
+  uint8_t maxDC;              ///< Max duty cycle value
+  boolean manDC           ///< Manual duty cycle flag
   int motorDirection;     ///< Current motor direction
 };
 
@@ -91,6 +91,13 @@ class MotorControl {
      * \param fw Freewheeling flag
      */
     void setMotorFreeWheeling(boolean fw);
+
+    /**
+     * \brief Set the state flag for duty cycle mode. If set to manual
+     * the target value (max) is read from the analog input (pot) else it
+     * is set following the internal parameters values
+     */
+    void setMotorManualDC(boolean dc);
 
     /**
      * \brief Accelerates to the regime speed for filament release then 

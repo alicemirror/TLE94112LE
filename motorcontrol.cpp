@@ -34,7 +34,7 @@ void MotorControl::reset() {
     internalStatus[j].freeWheeling = true;  // Free wheeling active
     internalStatus[j].minDC = DUTYCYCLE_MIN;  // Min duty cycle
     internalStatus[j].maxDC = DUTYCYCLE_MAX;  // Max duty cycle
-    internalStatus[j].accdelay = ACCELERATION_DELAY;
+    internalStatus[j].manDC = falaw;          // Duty cycle in auto mode
     internalStatus[j].motorDirection = MOTOR_DIRECTION_CW;
     // Configure the half bridges in no active state
   } // loop on the motors array
@@ -107,6 +107,20 @@ void MotorControl::setMotorFreeWheeling(boolean fw) {
     }
   }
 }
+
+void MotorControl::setMotorManualDC(boolean dc) {
+  if(currentMotor != 0) {
+    // We are setting a specific mmotor
+    internalStatus[currentMotor - 1].manDC = dc;
+  }
+  else {
+    int j;
+    for (j = 0; j < MAX_MOTORS; j++) {
+      internalStatus[j].manDC = dc;
+    }
+  }
+}
+
 
 void MotorControl::rotateCW(long duration) {
 //  motorRun(DC_MIN_EXTRUDER, DC_MAX_EXTRUDER, ACCELERATION_DELAY, duration, DIRECTION_FEED);

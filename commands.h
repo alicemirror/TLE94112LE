@@ -34,6 +34,12 @@
 #define MOTOR_START "start" ///< stop all
 #define MOTOR_STOP "stop"   ///< stop all
 
+//Duty cycle
+#define MANUAL_DC "dcmanual"    ///< Set the duty cycle value depending on the pot
+#define AUTO_DC "dcauto"        ///< Set the duty cycle current limits
+#define MIN_DC "dcmin"          ///< Set the min duty cycle value via pot
+#define MAX_DC "dcmax"          ///< Set the max duty cycle value via pot
+
 // Motor enable flag
 #define MOTOR_1 "m1"        ///< Enable/disable motor
 #define MOTOR_2 "m2"        ///< Enable/disable motor
@@ -43,6 +49,14 @@
 #define MOTOR_6 "m6"        ///< Enable/disable motor
 #define MOTOR_ALL "all"     ///< All motors enabled
 #define MOTOR_NONE "none"   ///< All motors disabled
+
+// Motor enable flag
+#define MOTOR_1 "m1?"        ///< Enable/disable motor
+#define MOTOR_2 "m2?"        ///< Enable/disable motor
+#define MOTOR_3 "m3?"        ///< Enable/disable motor
+#define MOTOR_4 "m4?"        ///< Enable/disable motor
+#define MOTOR_5 "m5?"        ///< Enable/disable motor
+#define MOTOR_6 "m6?"        ///< Enable/disable motor
 
 // PWM Frequency selector
 #define PWM_0    "nopPWM" ///< No PWM

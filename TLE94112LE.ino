@@ -14,13 +14,33 @@
 #include "commands.h"
 #include "motorcontrol.h"
 
+//! Motor control class instance
 MotorControl motor;
-//! operating mode
-boolean modeAuto;
+
 //! Status LED
-int ledPin;
+#define LEDPIN 12
+//! Analog duty cycle input pin
+#define ANALOG_DCPIN A0
+
 //! LCD library initialisation
 ShiftLCD lcd(2, 3, 4);
+
+//! Duty cycle value read from the analog in
+uint8_t inputAnalogDC;
+//! Last dutycycle value read from the analog in
+uint8_t lastAnalogDC;
+
+//! Duty cycle analog read should be ignore (bypass the analog reading)
+#define ANALOG_DCNONE 0
+//! Duty cycle analog read should be assgined to DC min
+#define ANALOG_DCMIN 1
+//! Duty cycle analog read should be assgined to DC mAX
+#define ANALOG_DCMAX 2
+//! Duty cycle analog read should be assgined to DC manual reading
+#define ANALOG_DCMAN 3
+
+//! Duty cycle analog value currently used during readings
+int analogDutyCycle;
 
 // ==============================================
 // Initialisation
@@ -31,10 +51,13 @@ void setup() {
   // try with a lower communication speed
   Serial.begin(38400);
 
-  // Assign the LED pint number and initialize the output  
-  ledPin = 12;
-  pinMode(ledPin, OUTPUT);   // LED reading signal
-
+  analogDutyCycle = ASNALOG_DCNONE;
+  pinMode(LEDPIN, OUTPUT);   // LED reading signal
+  pinMode(ANALOG_DCPIN, INPUT);
+  // 1.1 V on AVR 328p and 1.8 - 3.3 on the XMC1100
+  analogReference(INTERNAL);  
+  inputAnalogDC = lastAnalogDC = readAnalogDutyCycle();
+  
   flashLED();
 
   // Print the initialisation message
@@ -42,8 +65,8 @@ void setup() {
 
   // initialize the motor class
   motor.begin();  
-  modeAuto = false;
 
+  // initialize the LCD
   lcd.begin(16, 2);
   lcd.setCursor(0,0);
   // Print a message to the LCD.
@@ -108,6 +131,16 @@ void serialMessage(String title, String description) {
     Serial.print(" ");
     Serial.println(description);
 }
+
+/**
+ * Read the analog value from potentiometer and convert it in the range
+ * 0 - max duty cycle value
+ * 
+ * \return the reading value
+ */
+ uint8_t readAnalogDutyCycle(void) {
+   return map(analogRead(ANALOG_DCPIN), 0, 1024, 0, DUTYCYCLE_MAX)
+ }
 
 /**
  * Parse the command string and echo the executing message or command unknown error.
@@ -218,6 +251,25 @@ void serialMessage(String title, String description) {
   }
   else if(commandString.equals(FW_PASSIVE)) {
     motor.setMotorFreeWheeling(MOTOR_FW_PASSIVE);
+    serialMessage(CMD_MODE, commandString);
+  }
+  // =========================================================
+  // Duty cycle settings
+  // =========================================================
+  else if(commandString.equals(MANUAL_DC)) {
+    motor.setMotorManualDC(MOTOR_MANUAL_DC);
+    serialMessage(CMD_MODE, commandString);
+  }
+  else if(commandString.equals(AUTO_DC)) {
+    motor.setMotorManualDC(MOTOR_AUTO_DC);
+    serialMessage(CMD_MODE, commandString);
+  }
+  else if(commandString.equals(MIN_DC)) {
+    
+    serialMessage(CMD_MODE, commandString);
+  }
+  else if(commandString.equals(MAX_DC)) {
+
     serialMessage(CMD_MODE, commandString);
   }
   
