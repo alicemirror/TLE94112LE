@@ -119,111 +119,51 @@ void serialMessage(String title, String description) {
   // =========================================================
   // Informative commands
   // =========================================================
+
   if(commandString.equals(SHOW_CONF)) {
     motor.showInfo();
   }
+
   // =========================================================
-  // Motor select
+  // Motor control
   // =========================================================
-  else if(commandString.equals(MOTOR_1)) {
-    motor.currentMotor = 1;
-    motor.internalStatus[0].isEnabled = true;
-    serialMessage(CMD_SET, commandString);
+
+  else if(commandString.equals(MOTOR_FEED)) {
+    serialMessage(CMD_EXEC, commandString);
+//    motor.feedExtruder(1500);
+    motor.tleDiagnostic();
   }
-  else if(commandString.equals(MOTOR_2)) {
-    motor.currentMotor = 2;
-    motor.internalStatus[1].isEnabled = true;
-    serialMessage(CMD_SET, commandString);
+  else if(commandString.equals(MOTOR_PULL)) {
+    serialMessage(CMD_EXEC, commandString);
+    motor.filamentLoad(1500);
+    motor.tleDiagnostic();
   }
-  else if(commandString.equals(MOTOR_3)) {
-    motor.currentMotor = 3;
-    motor.internalStatus[2].isEnabled = true;
-    serialMessage(CMD_SET, commandString);
+  else if(commandString.equals(MOTOR_STOP)) {
+    serialMessage(CMD_EXEC, commandString);
+    motor.motorBrake();
+    motor.tleDiagnostic();
   }
-  else if(commandString.equals(MOTOR_4)) {
-    motor.currentMotor = 4;
-    motor.internalStatus[3].isEnabled = true;
-    serialMessage(CMD_SET, commandString);
+  else if(commandString.equals(MOTOR_FEED_CONT)) {
+    serialMessage(CMD_EXEC, commandString);
+    motor.filamentContFeed();
   }
-  else if(commandString.equals(MOTOR_5)) {
-    motor.currentMotor = 5;
-    motor.internalStatus[4].isEnabled = true;
-    serialMessage(CMD_SET, commandString);
+  else if(commandString.equals(MOTOR_PULL_CONT)) {
+    serialMessage(CMD_EXEC, commandString);
+    motor.filamentContLoad();
   }
-  else if(commandString.equals(MOTOR_6)) {
-    motor.currentMotor = 6;
-    motor.internalStatus[5].isEnabled = true;
-    serialMessage(CMD_SET, commandString);
-  }
-  else if(commandString.equals(MOTOR_ALL)) {
-    int j;
-    motor.currentMotor = 0;
-    for(j = 0; j < MAX_MOTORS; j++) {
-      motor.internalStatus[j].isEnabled = true;
-    }
-    serialMessage(CMD_SET, commandString);
-  }
-  else if(commandString.equals(MOTOR_NONE)) {
-    int j;
-    motor.currentMotor = 0;
-    for(j = 0; j < MAX_MOTORS; j++) {
-      motor.internalStatus[j].isEnabled = false;
-    }
-    serialMessage(CMD_SET, commandString);
-  }
+
   // =========================================================
-  // PWM channel select
+  // Change behaviour mode
   // =========================================================
-  else if(commandString.equals(PWM_0)) {
-    motor.setPWM(tle94112.TLE_NOPWM);
-    serialMessage(CMD_PWM, commandString);
-  }
-  else if(commandString.equals(PWM_80)) {
-    motor.setPWM(tle94112.TLE_PWM1);
-    serialMessage(CMD_PWM, commandString);
-  }
-  else if(commandString.equals(PWM_100)) {
-    motor.setPWM(tle94112.TLE_PWM2);
-    serialMessage(CMD_PWM, commandString);
-  }
-  else if(commandString.equals(PWM_200)) {
-    motor.setPWM(tle94112.TLE_PWM3);
-    serialMessage(CMD_PWM, commandString);
-  }
-  // =========================================================
-  // Direction and acceleration setting
-  // =========================================================
-  else if(commandString.equals(DIRECTION_CW)) {
-    motor.setMotorDirection(MOTOR_DIRECTION_CW);
-    serialMessage(CMD_DIRECTION, commandString);
-  }
-  else if(commandString.equals(DIRECTION_CCW)) {
-    motor.setMotorDirection(MOTOR_DIRECTION_CCW);
-    serialMessage(CMD_DIRECTION, commandString);
-  }
-  else if(commandString.equals(MOTOR_RAMP)) {
-    motor.setMotorRamp(RAMP_ON);
+
+  else if(commandString.equals(MODE_AUTO)) {
     serialMessage(CMD_MODE, commandString);
+    modeAuto = true;
   }
-  else if(commandString.equals(MOTOR_NORAMP)) {
-    motor.setMotorRamp(RAMP_OFF);
+  else if(commandString.equals(MODE_MANUAL)) {
     serialMessage(CMD_MODE, commandString);
+    modeAuto = false;
   }
-  // =========================================================
-  // Freewheeling mode
-  // =========================================================
-  else if(commandString.equals(FW_ACTIVE)) {
-    motor.setMotorFreeWheeling(MOTOR_FW_ACTIVE);
-    serialMessage(CMD_MODE, commandString);
-  }
-  else if(commandString.equals(FW_PASSIVE)) {
-    motor.setMotorFreeWheeling(MOTOR_FW_PASSIVE);
-    serialMessage(CMD_MODE, commandString);
-  }
-  
-  
-  
-  
   else
     serialMessage(CMD_WRONGCMD, commandString);
  }

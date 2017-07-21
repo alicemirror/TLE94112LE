@@ -14,40 +14,101 @@
 void MotorControl::begin(void) {
   // enable tle94112
   tle94112.begin();
-
-  internalStatus.isRunning = false;
-
-  // Disable the unused half bridges
-  #ifdef _HIGHCURRENT
-    // High current mode, keep in use HB1&2, 3&4
-    tle94112.configHB(tle94112.TLE_HB5, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB6, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB7, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB8, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB9, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB10, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB11, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB12, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-  #else
-    // No High current mode use only HB1 & 2
-    tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB5, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB6, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB7, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB8, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB9, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB10, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB11, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB12, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-  #endif
+  
+  reset();
 }
 
 void MotorControl::end(void) {
   tle94112.end();
 }
 
-void MotorControl::feedExtruder(long duration) {
+void MotorControl::reset() {
+  int j;
+
+  // Loop on all the available motors
+  for(j = 0; j < MAX_MOTORS; j++) {
+    internalStatus[j].useRamp = false;      // No acceleration
+    internalStatus[j].channelPWM = tle94112.TLE_NOPWM;        // PWM disabled on start
+    internalStatus[j].isEnabled = false;    // Motors initially disabled
+    internalStatus[j].isRunning = false;    // Not running (should be enabled)
+    internalStatus[j].freeWheeling = true;  // Free wheeling active
+    internalStatus[j].minDC = DUTYCYCLE_MIN;  // Min duty cycle
+    internalStatus[j].maxDC = DUTYCYCLE_MAX;  // Max duty cycle
+    internalStatus[j].accdelay = ACCELERATION_DELAY;
+    internalStatus[j].motorDirection = MOTOR_DIRECTION_CW;
+    // Configure the half bridges in no active state
+  } // loop on the motors array
+
+  // Preset all the half bridges to disabled
+  tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+  tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+  tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+  tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+  tle94112.configHB(tle94112.TLE_HB5, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+  tle94112.configHB(tle94112.TLE_HB6, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+  tle94112.configHB(tle94112.TLE_HB7, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+  tle94112.configHB(tle94112.TLE_HB8, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+  tle94112.configHB(tle94112.TLE_HB9, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+  tle94112.configHB(tle94112.TLE_HB10, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+  tle94112.configHB(tle94112.TLE_HB11, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+  tle94112.configHB(tle94112.TLE_HB12, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+
+  currentMotor = 0; // No motors selected
+}
+
+void MotorControl::setPWM(uint8_t pwmCh) {
+  if(currentMotor != 0) {
+    // We are setting a specific mmotor
+    internalStatus[currentMotor - 1].channelPWM = pwmCh;
+  }
+  else {
+    int j;
+    for (j = 0; j < MAX_MOTORS; j++) {
+      internalStatus[j].channelPWM = pwmCh;
+    }
+  }
+}
+
+void MotorControl::setMotorDirection(int dir) {
+  if(currentMotor != 0) {
+    // We are setting a specific mmotor
+    internalStatus[currentMotor - 1].motorDirection = dir;
+  }
+  else {
+    int j;
+    for (j = 0; j < MAX_MOTORS; j++) {
+      internalStatus[j].motorDirection = dir;
+    }
+  }
+}
+
+void MotorControl::setMotorRamp(boolean acc) {
+  if(currentMotor != 0) {
+    // We are setting a specific mmotor
+    internalStatus[currentMotor - 1].useRamp = acc;
+  }
+  else {
+    int j;
+    for (j = 0; j < MAX_MOTORS; j++) {
+      internalStatus[j].useRamp = acc;
+    }
+  }
+}
+
+void MotorControl::setMotorFreeWheeling(boolean fw) {
+  if(currentMotor != 0) {
+    // We are setting a specific mmotor
+    internalStatus[currentMotor - 1].freeWheeling = fw;
+  }
+  else {
+    int j;
+    for (j = 0; j < MAX_MOTORS; j++) {
+      internalStatus[j].freeWheeling = fw;
+    }
+  }
+}
+
+void MotorControl::rotateCW(long duration) {
 //  motorRun(DC_MIN_EXTRUDER, DC_MAX_EXTRUDER, ACCELERATION_DELAY, duration, DIRECTION_FEED);
   motorBrake();
 }
@@ -74,31 +135,31 @@ void MotorControl::motorRun(int minDC, int maxDC, int accdelay, long duration, i
   int j;
 
   // If the motor is already running it is stopped before starting again
-  if(internalStatus.isRunning)
-    motorBrake();
+//  if(internalStatus.isRunning)
+//    motorBrake();
   // Check for the direction
-  if(motorDirection == DIRECTION_FEED) {
-#ifdef _HIGHCURRENT
-    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-    tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-#else
-    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-#endif
-  }
-  else {
-#ifdef _HIGHCURRENT
-    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-    tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-#else
-    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-#endif
-  }
+//  if(motorDirection == DIRECTION_FEED) {
+//#ifdef _HIGHCURRENT
+//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//    tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//    tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//#else
+//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//#endif
+//  }
+//  else {
+//#ifdef _HIGHCURRENT
+//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//    tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//    tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//#else
+//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//#endif
+//  }
 
   // Acceleration loop  
   for(j = minDC; j <= maxDC; j++) {
@@ -134,38 +195,38 @@ void MotorControl::motorRun(int minDC, int maxDC, int accdelay, long duration, i
 void MotorControl::motorStart(int minDC, int maxDC, int accdelay, int motorDirection) {
   int j;
   // If the motor is already running it is stopped before starting again
-  if(internalStatus.isRunning)
-    motorBrake();
-  // Set the motor status
-  internalStatus.isRunning = true;
-  internalStatus.minDC = minDC;
-  internalStatus.maxDC = maxDC;
-  internalStatus.accdelay = accdelay;
-  internalStatus.motorDirection = motorDirection;
+//  if(internalStatus.isRunning)
+//    motorBrake();
+//  // Set the motor status
+//  internalStatus.isRunning = true;
+//  internalStatus.minDC = minDC;
+//  internalStatus.maxDC = maxDC;
+//  internalStatus.accdelay = accdelay;
+//  internalStatus.motorDirection = motorDirection;
 
   // Check for the direction
-  if(motorDirection == DIRECTION_FEED) {
-#ifdef _HIGHCURRENT
-    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-    tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-#else
-    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-#endif
-  }
-  else {
-#ifdef _HIGHCURRENT
-    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-    tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-#else
-    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-#endif
-  }
+//  if(motorDirection == DIRECTION_FEED) {
+//#ifdef _HIGHCURRENT
+//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//    tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//    tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//#else
+//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//#endif
+//  }
+//  else {
+//#ifdef _HIGHCURRENT
+//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//    tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//    tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//#else
+//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//#endif
+//  }
 
   // Acceleration loop  
   for(j = minDC; j <= maxDC; j++) {

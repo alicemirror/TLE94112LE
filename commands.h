@@ -20,19 +20,19 @@
 #define CMD_NOCMD "unknown "
 #define CMD_SET "setting "
 #define CMD_MODE "set "
+#define CMD_DIRECTION "Direction "
+#define CMD_PWM "PWM: "
 #define CMD_WRONGCMD "wrong value "
 
-// Running mode
-#define MODE_AUTO "auto"     ///< Run in automatic mode
-#define MODE_MANUAL "man"    ///< Run in manual mode
+// Direction control
+#define DIRECTION_CW "cw"     ///< clockwise rotation
+#define DIRECTION_CCW "ccw"   ///< counterclockwise rotation
+#define MOTOR_RAMP "accel"  ///< Enable the acceleration when motor start
+#define MOTOR_NORAMP "noaccel"  ///< Disable the acceleration when motor start
 
-// Motor control
-#define MOTOR_FEED "cw"             ///< clockwise rotation
-#define MOTOR_PULL "ccw"            ///< counterclockwise rotation
-#define MOTOR_STOP "stop"           ///< stop all
-#define MOTOR_FEED_CONT "cwcont"    ///< continuous clockwise rotation
-#define MOTOR_PULL_CONT "ccwcont"   ///< continuous counterclockwise rotation
-#define MOTOR_RAMP "accel"          ///< Enable/disable the acceleration when motor start
+// Start/stop
+#define MOTOR_START "start" ///< stop all
+#define MOTOR_STOP "stop"   ///< stop all
 
 // Motor enable flag
 #define MOTOR_1 "m1"        ///< Enable/disable motor
@@ -45,9 +45,14 @@
 #define MOTOR_NONE "none"   ///< All motors disabled
 
 // PWM Frequency selector
-#define PWM_80   "80"    ///< PWM 80 Hz
-#define PWM_100  "100"   ///<PWM 100 Hz
-#define PWM_200  "200"   ///< PWM 200 Hz
+#define PWM_0    "nopPWM" ///< No PWM
+#define PWM_80   "80"     ///< PWM 80 Hz
+#define PWM_100  "100"    ///<PWM 100 Hz
+#define PWM_200  "200"    ///< PWM 200 Hz
+
+// Freewheeling mode
+#define FW_ACTIVE "fwactive"    ///< Fereewheeling active
+#define FW_PASSIVE "fwpassive"  ///< Freewheeling passive
 
 // Information commands
 #define SHOW_CONF "conf"    ///< Dump the current settings

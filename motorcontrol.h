@@ -20,7 +20,7 @@
  */
 struct motorStatus {
   boolean useRamp;        ///< Use acceleration/deceleration cycle when starting
-  boolean usePWM;         ///< PWM Enabled for this motor
+  uint8_t channelPWM;     ///< PWM channel for this motor
   boolean isEnabled;      ///< Motor enabled status
   boolean isRunning;      ///< Motor running status (should be enabled)
   boolean freeWheeling;   ///< Free wheeling active or passive
@@ -28,12 +28,6 @@ struct motorStatus {
   int maxDC;              ///< Max duty cycle value
   int accdelay;           ///< Delay in steps (ms) during the acceleration / deceleration ramp
   int motorDirection;     ///< Current motor direction
-  int hb1;                ///< First half bridge
-  int hb2;                ///< Second half bridge
-#ifdef _HIGHCURRENT
-  int hb1H;               ///< Second first half bridge in High Current
-  int hb2H;               ///< Second second half bridge in High Current
-#endif
 };
 
 /**
@@ -56,9 +50,48 @@ class MotorControl {
     //! \brief stop the motor control
     void end(void);
 
+    /**
+     * \brief initialize the motor default settings and disable all the motors
+     * Launched when the class is initialised.
+     */
+    void reset(void);
+
     //! Status of the motors parameters and settings
     motorStatus internalStatus[MAX_MOTORS];
-  
+
+    //! Current motor in use (setting parameters)
+    int currentMotor;
+
+    /**
+     * \brief Set the desired PWM channel to the current motor if one
+     * or to all motors
+     * 
+     * \param pwmCh The selected PWM channel
+     */
+    void setPWM(uint8_t pwmCh);
+
+     /**
+      * \brief Set the desired direction for the selected motor (or all)
+      * 
+      * \param dir The selected direction, CW or CCW
+      */
+    void setMotorDirection(int dir);
+
+    /**
+     * Enable or disable the acceleration/deceleration sequence when motor
+     * start or invert direction
+     * 
+     * \param acc Acceleration flag
+     */
+    void setMotorRamp(boolean acc);
+
+    /**
+     * Enable or disable the freewheeling flag
+     * 
+     * \param fw Freewheeling flag
+     */
+    void setMotorFreeWheeling(boolean fw);
+
     /**
      * \brief Accelerates to the regime speed for filament release then 
      * keep the regime speed for the needed number of milliseconds
@@ -70,7 +103,7 @@ class MotorControl {
      * 
      * \param duration the numer of ms to feed at the regime speed
      */
-    void feedExtruder(long duration);
+    void rotateCW(long duration);
   
     /**
      * \brief Accelerates to the regime speed for filament release then 
