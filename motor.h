@@ -14,7 +14,7 @@
 #define _MOTOR
 
 //! Application title shown on startup
-#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.5"
+#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.6"
 
 //! For high current coupling half bridges together 1&2, 3&4
 #undef _HIGHCURRENT
@@ -91,6 +91,5 @@
 //! Application title shown on startup
 #define L_APP_NAME1 "Infineon test"
 #define L_APP_NAME2 "TLE94112 Shield"
-
 
 #endif

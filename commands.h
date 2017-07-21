@@ -22,7 +22,7 @@
 #define CMD_MODE "set "
 #define CMD_DIRECTION "Direction "
 #define CMD_PWM "PWM: "
-#define CMD_WRONGCMD "wrong value "
+#define CMD_WRONGCMD "wrong command "
 
 // Direction control
 #define DIRECTION_CW "cw"     ///< clockwise rotation
@@ -40,26 +40,26 @@
 #define MIN_DC "dcmin"          ///< Set the min duty cycle value via pot
 #define MAX_DC "dcmax"          ///< Set the max duty cycle value via pot
 
-// Motor enable flag
-#define MOTOR_1 "m1"        ///< Enable/disable motor
-#define MOTOR_2 "m2"        ///< Enable/disable motor
-#define MOTOR_3 "m3"        ///< Enable/disable motor
-#define MOTOR_4 "m4"        ///< Enable/disable motor
-#define MOTOR_5 "m5"        ///< Enable/disable motor
-#define MOTOR_6 "m6"        ///< Enable/disable motor
-#define MOTOR_ALL "all"     ///< All motors enabled
-#define MOTOR_NONE "none"   ///< All motors disabled
+// Motor select flag for settings
+#define MOTOR_ALL "all"     ///< All motors selected and enabled
+#define MOTOR_NONE "none"   ///< No motors disabled and disabled
+#define MOTOR_1 "m1"        ///< select motor
+#define MOTOR_2 "m2"        ///< select motor
+#define MOTOR_3 "m3"        ///< select motor
+#define MOTOR_4 "m4"        ///< select motor
+#define MOTOR_5 "m5"        ///< select motor
+#define MOTOR_6 "m6"        ///< select motor
 
-// Motor enable flag
-#define MOTOR_1 "m1?"        ///< Enable/disable motor
-#define MOTOR_2 "m2?"        ///< Enable/disable motor
-#define MOTOR_3 "m3?"        ///< Enable/disable motor
-#define MOTOR_4 "m4?"        ///< Enable/disable motor
-#define MOTOR_5 "m5?"        ///< Enable/disable motor
-#define MOTOR_6 "m6?"        ///< Enable/disable motor
+// Motor enable
+#define EN_MOTOR_1 "m1+"        ///< enable motor
+#define EN_MOTOR_2 "m2+"        ///< enable motor
+#define EN_MOTOR_3 "m3+"        ///< enable motor
+#define EN_MOTOR_4 "m4+"        ///< enable motor
+#define EN_MOTOR_5 "m5+"        ///< enable motor
+#define EN_MOTOR_6 "m6+"        ///< enable motor
 
 // PWM Frequency selector
-#define PWM_0    "nopPWM" ///< No PWM
+#define PWM_0    "noPWM" ///< No PWM
 #define PWM_80   "80"     ///< PWM 80 Hz
 #define PWM_100  "100"    ///<PWM 100 Hz
 #define PWM_200  "200"    ///< PWM 200 Hz

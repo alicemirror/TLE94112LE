@@ -24,9 +24,9 @@ struct motorStatus {
   boolean isEnabled;      ///< Motor enabled status
   boolean isRunning;      ///< Motor running status (should be enabled)
   boolean freeWheeling;   ///< Free wheeling active or passive
-  uint8_t minDC;              ///< Min duty cycle value
-  uint8_t maxDC;              ///< Max duty cycle value
-  boolean manDC           ///< Manual duty cycle flag
+  uint8_t minDC;          ///< Min duty cycle value
+  uint8_t maxDC;          ///< Max duty cycle value
+  boolean manDC;          ///< Manual duty cycle flag
   int motorDirection;     ///< Current motor direction
 };
 
@@ -98,6 +98,16 @@ class MotorControl {
      * is set following the internal parameters values
      */
     void setMotorManualDC(boolean dc);
+
+    /**
+     * \brief Assign a user defined value as min duty cycle
+     */
+    void setMotorMinDC(uint8_t dc);
+
+    /**
+     * \brief Assign a user defined value as Max duty cycle
+     */
+    void setMotorMaxDC(uint8_t dc);
 
     /**
      * \brief Accelerates to the regime speed for filament release then 
