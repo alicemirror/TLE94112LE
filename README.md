@@ -43,52 +43,72 @@ Excluding the potentiometer on the board all the controls are sent via terminal
 through a USB-to-serial connection. The available commands are listed below:
 
 ### Direction control
-- cw : clockwise rotation
-- ccw : counterclockwise rotation
-- accel : Enable the acceleration when motor start
-- noaccel : Disable the acceleration when motor start
+- __cw__ : clockwise rotation
+- __ccw__ : counterclockwise rotation
+- __accel__ : Enable the acceleration when motor start
+- __noaccel__ : Disable the acceleration when motor start
 
 ### Action commands
-- start : start running
-- stop : stop all
-- reset : reset the system to the default
+- __start__ : start running
+- __stop__ : stop all
+- __reset__ : reset the system to the default
 
 ### Duty cycle
-- dcmanual : Set the duty cycle value depending on the pot
-- dcauto : Set the duty cycle current limits
-- dcmin : Set the min duty cycle value via pot
-- dcmax : Set the max duty cycle value via pot
+- __dcmanual__ : Set the duty cycle value depending on the pot
+- __dcauto__ : Set the duty cycle current limits
+- __dcmin__ : Set the min duty cycle value via pot
+- __dcmax__ : Set the max duty cycle value via pot
 
 ### Motor select flag for settings
-- all : All motors selected and enabled
-- none : No motors disabled and disabled
-- m1 : select motor
-- m2 : select motor
-- m3 : select motor
-- m4 : select motor
-- m5 : select motor
-- m6 : select motor
+- __all__ : All motors selected and enabled
+- __none__ : No motors disabled and disabled
+- __m1__ : select motor
+- __m2__ : select motor
+- __m3__ : select motor
+- __m4__ : select motor
+- __m5__ : select motor
+- __m6__ : select motor
 
 ### Motor enable
-- m1+ : enable motor
-- m2+ : enable motor
-- m3+ : enable motor
-- m4+ : enable motor
-- m5+ : enable motor
-- m6+ : enable motor
+- __m1+__ : enable motor
+- __m2+__ : enable motor
+- __m3+__ : enable motor
+- __m4+__ : enable motor
+- __m5+__ : enable motor
+- __m6+__ : enable motor
 
 ### PWM Frequency selector
-- noPWM : No PWM
-- 80 : PWM 80 Hz
-- 100 : PWM 100 Hz
-- 200 : PWM 200 Hz
+- __noPWM__ : No PWM
+- __80__ : PWM 80 Hz
+- __100__ : PWM 100 Hz
+- __200__ : PWM 200 Hz
 
 ### Freewheeling mode
-- fwactive : Fereewheeling active
-- fwpassive : Freewheeling passive
+- __fwactive__ : Fereewheeling active
+- __fwpassive__ : Freewheeling passive
 
 ### Information commands
-- conf : Dump the current settings
+- __conf__ : Dump the current settings
 
+Below the defaault settings table shown on the terminal after a _conf_ command.
+
+> *********************************************************
+>                 TLE94112LE Motors Configuration
+> *********************************************************
+> __________________________________________________________
+> Motor|Enabled|Accel|Active FW|DC Min|DC Max|DC Man|Dir|PWM
+> -----+-------+-----+---------+------+------+------+---+---
+>  M1  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No
+> -----+-------+-----+---------+------+------+------+---+---
+>  M2  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No
+> -----+-------+-----+---------+------+------+------+---+---
+>  M3  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No
+> -----+-------+-----+---------+------+------+------+---+---
+>  M4  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No
+> -----+-------+-----+---------+------+------+------+---+---
+>  M5  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No
+> -----+-------+-----+---------+------+------+------+---+---
+>  M6  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No
+> -----+-------+-----+---------+------+------+------+---+---
 
 

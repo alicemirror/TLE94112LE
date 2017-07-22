@@ -1,27 +1,94 @@
-# 3D Printer Filament Dispenser and Monitor
-Communicates with your serial USB port with any USB connected device with this motorised version of the filament dispenser.
+# Infineon TLE94112LE Test
+## Interactive test platform for the infineon TLE94112LE Shield for Arduino
 
-![3D render design](images/Exploeded%2001.jpg)
+![Workbench platform](images/IMG_20170722_080932.jpg)
 
-## Hardware
-![Building](images/IMG_20170701_225910.jpg)
- 
-**_Micro Controller Platform_**: The _3D Printer filament dispenser_ software can work on [**Arduino**](http://export.farnell.com/arduino/a000066/atmega328-arduino-uno-eval-board/dp/2075382?ICID=I-HP-PP-Arduino-A000066) and the [**Infineon XMC 1100**](http://export.farnell.com/infineon/kit-xmc11-boot-001/cortex-m0-evaluation-board/dp/2376496) Arduino compatible board (that works better and faster).
+## Design note
+This if the software application created with the Arduino IDE 1.8.3 to run the
+test platform.
 
-**_DC Motor Shield_**: The DC motor is controlled by the **Infineon TLE97112LE** DC Motor controller shield for Arduino
+This application is specific for the hardware building but can be easily modified
+to run with different kind of brushed motors and other inductive components.
 
-**_Motor_**: Motion if actuated by a [**McLennan brushed DC Motor, DC 12 V**](http://export.farnell.com/mclennan/1271-12-10/motor-geared-12v-165rpm/dp/1784829)
+The test platform has been created to manage interactively most (almost all) of
+the features and functions of the motor controller shield. This version
+uses 6 brushed geared micro motors running at 6V max (power is set to 5.5V).
 
-**_Sensor_**: The weight sensor is a max 5Kg inexpensive load sensor connected to an AD amplifier board based on the **HX711** IC, specialised for load cells control.
+Warning: using and higher power for motors a the LCD backlight should be powered
+bt the Arduino 5V to avoid damage.
 
-**_Filament base_**: The filament base assemble the load cell sensor holding the MX711 AD filter acting as the support for the filament Roll. The base has four rotating bearings to reduce noise and friction.
+![Test platform detail](images/IMG_20170720_231205.jpg)
 
-[![Video:](http://img.youtube.com/vi/YBbqWqICec8/0.jpg)](https://www.youtube.com/watch?v=YBbqWqICec8)
+### Functional components
+The platform has a LCD display to interactively show the motor settings. Every
+single motor can be set separately or all together. The TLE94112LE shield motors
+are powered by a 5.5V regulated DC-DC small board while a potentiometer connected
+to the Arduino channel A0 is used to dynamically modify the PWM duty cycle.
 
-## Application note
-![Building](images/IMG_20170701_142956.jpg)
+Please note that the duty cycle configuration is related to the PWM even also the
+software permit setting different duty cycle values for every single motor it is
+not working due the limitation of the board. The duty cycle setting should be
+used selecting all the motors together. This issue will be updated in future
+versions.
 
-This software is also compatible with the non-motorised verson of the filament roll monitor and dispenser superseeding the previous version. To use the sketch without the motor just '<\#undef _USE_MOTOR>' in filament.h
+### MCU
+![Test platform detail](images/IMG_20170529_162044.jpg)
 
-# The system in action
-[![Video:](http://img.youtube.com/vi/5b4c0GOEcK4/0.jpg)](https://www.youtube.com/watch?v=5b4c0GOEcK4)
+This software is compatible with Arduino UNO R3, Genuino 101 and Arduino 101 but
+the best performances are reached with the Infineon XMC1100 Boot kit Arduino 
+compatible board.
+
+## Commands
+Excluding the potentiometer on the board all the controls are sent via terminal 
+through a USB-to-serial connection. The available commands are listed below:
+
+### Direction control
+- cw : clockwise rotation
+- ccw : counterclockwise rotation
+- accel : Enable the acceleration when motor start
+- noaccel : Disable the acceleration when motor start
+
+### Action commands
+- start : start running
+- stop : stop all
+- reset : reset the system to the default
+
+### Duty cycle
+- dcmanual : Set the duty cycle value depending on the pot
+- dcauto : Set the duty cycle current limits
+- dcmin : Set the min duty cycle value via pot
+- dcmax : Set the max duty cycle value via pot
+
+### Motor select flag for settings
+- all : All motors selected and enabled
+- none : No motors disabled and disabled
+- m1 : select motor
+- m2 : select motor
+- m3 : select motor
+- m4 : select motor
+- m5 : select motor
+- m6 : select motor
+
+### Motor enable
+- m1+ : enable motor
+- m2+ : enable motor
+- m3+ : enable motor
+- m4+ : enable motor
+- m5+ : enable motor
+- m6+ : enable motor
+
+### PWM Frequency selector
+- noPWM : No PWM
+- 80 : PWM 80 Hz
+- 100 : PWM 100 Hz
+- 200 : PWM 200 Hz
+
+### Freewheeling mode
+- fwactive : Fereewheeling active
+- fwpassive : Freewheeling passive
+
+### Information commands
+- conf : Dump the current settings
+
+
+
