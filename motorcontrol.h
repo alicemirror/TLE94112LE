@@ -12,6 +12,7 @@
 #ifndef _MOTORCONTROL
 #define _MOTORCONTROL
 
+#include <Streaming.h>
 #include <TLE94112.h>
 #include "motor.h"
 
@@ -36,6 +37,9 @@ struct motorStatus {
  */
 class MotorControl {
   public:
+    //! Status of the motors parameters and settings
+    motorStatus internalStatus[MAX_MOTORS];
+
     /** 
      * \brief Initialization and motor settings 
      * 
@@ -56,8 +60,10 @@ class MotorControl {
      */
     void reset(void);
 
-    //! Status of the motors parameters and settings
-    motorStatus internalStatus[MAX_MOTORS];
+    /**
+     * Reset all the half bridges immediately stopping the motors
+     */
+    void resetHB(void);
 
     //! Current motor in use (setting parameters)
     int currentMotor;

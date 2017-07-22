@@ -14,7 +14,7 @@
 #define _MOTOR
 
 //! Application title shown on startup
-#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.9"
+#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.10"
 
 //! For high current coupling half bridges together 1&2, 3&4
 #undef _HIGHCURRENT
@@ -91,5 +91,42 @@
 //! Application title shown on startup
 #define L_APP_NAME1 "Infineon test"
 #define L_APP_NAME2 "TLE94112 Shield"
+
+// ======================================================================
+//        Configuration info constants
+// ======================================================================
+
+#define INFO_MAIN_HEADER "*********************************************************"
+#define INFO_TITLE "                TLE94112LE Motors Configuration"
+#define INfO_TAB_HEADER1 "__________________________________________________________"
+#define INfO_TAB_HEADER2 "Motor|Enabled|Accel|Active FW|DC Min|DC Max|DC Man|Dir|PWM"
+#define INfO_TAB_HEADER3 "-----+-------+-----+---------+------+------+------+---+---"
+
+// Motor num
+#define INFO_FIELD1A " M"
+#define INFO_FIELD1B "  |"
+
+#define INFO_FIELD2Y "  Yes  |"
+#define INFO_FIELD2N "   No  |"
+
+#define INFO_FIELD3Y " Yes |"
+#define INFO_FIELD3N "  No |"
+
+#define INFO_FIELD4Y "   Yes   |"
+#define INFO_FIELD4N "    No   |"
+
+#define INFO_FIELD5_6A " "
+#define INFO_FIELD5_6B "  |"
+
+#define INFO_FIELD7Y "  Yes |"
+#define INFO_FIELD7N "   No |"
+
+#define INFO_FIELD8A " CW|"
+#define INFO_FIELD8B "CCW|"
+
+#define INFO_FIELD9_NO " No"
+#define INFO_FIELD9_80 " 80"
+#define INFO_FIELD9_100 "100"
+#define INFO_FIELD9_200 "200"
 
 #endif

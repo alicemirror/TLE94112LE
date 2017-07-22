@@ -39,7 +39,13 @@ void MotorControl::reset() {
     // Configure the half bridges in no active state
   } // loop on the motors array
 
-  // Preset all the half bridges to disabled
+  resetHB();
+  
+  currentMotor = 0; // No motors selected
+}
+
+void MotorControl::resetHB(void) {
+    // Set all the half bridges to disabled (motors stopped)
   tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
   tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
   tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
@@ -52,8 +58,6 @@ void MotorControl::reset() {
   tle94112.configHB(tle94112.TLE_HB10, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
   tle94112.configHB(tle94112.TLE_HB11, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
   tle94112.configHB(tle94112.TLE_HB12, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
-
-  currentMotor = 0; // No motors selected
 }
 
 void MotorControl::setPWM(uint8_t pwmCh) {
@@ -322,7 +326,66 @@ boolean MotorControl:: tleCheckDiagnostic(void) {
 }
 
 void MotorControl::showInfo(void) {
-  Serial.println("Info");  
+  int j;
+  // Table header
+  Serial << INFO_MAIN_HEADER << endl << INFO_TITLE << endl << INFO_MAIN_HEADER << endl;
+  Serial << INfO_TAB_HEADER1 << endl << INfO_TAB_HEADER2 << endl << INfO_TAB_HEADER3 << endl;
+  // Build the table data
+  for (j = 0; j < MAX_MOTORS; j++) {
+    // #1 - Motor
+    Serial << INFO_FIELD1A << (j + 1) << INFO_FIELD1B;
+    // #2 - Enabled
+    if(internalStatus[j].isEnabled)
+      Serial << INFO_FIELD2Y;
+    else
+      Serial << INFO_FIELD2N;
+    // #3 - Acceleration
+    if(internalStatus[j].useRamp)
+      Serial << INFO_FIELD3Y;
+    else
+      Serial << INFO_FIELD3N;
+    // #4 - Active freewheeling
+    if(internalStatus[j].freeWheeling)
+      Serial << INFO_FIELD4Y;
+    else
+      Serial << INFO_FIELD4N;
+    // #5 - DC Min
+    Serial << INFO_FIELD5_6A;
+    if(internalStatus[j].minDC < 100)
+      Serial << " ";
+    Serial << internalStatus[j].minDC << INFO_FIELD5_6B;
+    // #6 - DC Max
+    Serial << INFO_FIELD5_6A;
+    if(internalStatus[j].maxDC < 100)
+      Serial << " ";
+    Serial << internalStatus[j].maxDC << INFO_FIELD5_6B;
+    // #7 - Manual DC
+    if(internalStatus[j].manDC)
+      Serial << INFO_FIELD7Y;
+    else
+      Serial << INFO_FIELD7N;
+    // #8 - Direction
+    if(internalStatus[j].motorDirection == MOTOR_DIRECTION_CW)
+      Serial << INFO_FIELD8A;
+    else
+      Serial << INFO_FIELD8B;
+    // #9 - PWM
+    switch(internalStatus[j].channelPWM) {
+      case tle94112.TLE_NOPWM:
+        Serial << INFO_FIELD9_NO;
+      break;
+      case tle94112.TLE_PWM1:
+        Serial << INFO_FIELD9_80;
+      break;
+      case tle94112.TLE_PWM2:
+        Serial << INFO_FIELD9_100;
+      break;
+      case tle94112.TLE_PWM3:
+        Serial << INFO_FIELD9_200;
+      break;
+    }
+    Serial << endl << INfO_TAB_HEADER3 << endl;
+  }
 }
 
 void MotorControl::tleDiagnostic() {
