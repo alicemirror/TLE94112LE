@@ -201,8 +201,28 @@ class MotorControl {
      */
     void motorBrake();
 
+    /**
+     * \brief Configure the halfbridges of all the motors. 
+     * 
+     * This method should be called before executing a start command.
+     * The method loop on all motors and call recursively the same
+     * polymorphic method with the setup parameters for any single motor
+     * 
+     */
+    void motorConfigHB(void);
+
+    /**
+     * \brief Configure the halfbridges of the specified motor
+     * 
+     * Thie methodexecutes the settings of the specified motor according with
+     * the currently settings and parameters
+     * 
+     * \param motor The motor ID to be configured
+     */
+    void motorConfigHB(int motor);
+
     /** 
-     * \brief Show Current motors configuration
+     * \brief Show Current motors configuration in a table on the serial terminal
      */
      void showInfo(void);
 

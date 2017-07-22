@@ -318,6 +318,51 @@ void MotorControl::motorBrake(void) {
   }
 }
 
+void MotorControl::motorConfigHB(void) {
+  int j;
+
+    for(j == 0; j < MAX_MOTORS; j++) {
+      if(internalStatus[j].isRunning) {
+        motorConfigHB(j); // call the configuration method
+      }
+    }
+}
+
+void MotorControl::motorConfigHB(int motor) {
+  int hb1, hb2;
+
+  // Calculate the first and second half bridge depending on the motor ID
+  hb1 = calcHB1(motor);
+  hb2 = calcHB2(motor);
+
+
+
+
+  // Check for the direction
+//  if(motorDirection == DIRECTION_FEED) {
+//#ifdef _HIGHCURRENT
+//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//    tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//    tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//#else
+//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//#endif
+//  }
+//  else {
+//#ifdef _HIGHCURRENT
+//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//    tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//    tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//#else
+//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
+//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
+//#endif
+//  }
+}
+
 boolean MotorControl:: tleCheckDiagnostic(void) {
   if(tle94112.getSysDiagnosis() == tle94112.TLE_STATUS_OK)
     return false;
