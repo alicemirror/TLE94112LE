@@ -92,7 +92,10 @@ void loop() {
   int j;
   boolean isRunStatus;
 
-  // Check if the motor is running to test the error status
+  // -------------------------------------------------------------
+  // BLOCK 1 : MOTORS RUNNING STATUS
+  // -------------------------------------------------------------
+  // Check if at least one motor is running to test the error status
   // Note: It is possible to isolate the error status, if any,
   // for any motor. Here we make a simplification and check over
   // the motor without filtering
@@ -103,17 +106,48 @@ void loop() {
       j = MAX_MOTORS; // Force exit from loop
     } // check for running motors
   } // motors loop
-
+  // If at least one motor is running check for diagnostic
   if(isRunStatus) {
     if(motor.tleCheckDiagnostic()) {
       motor.tleDiagnostic();
     }
   }
-
+  // -------------------------------------------------------------
+  // BLOCK 2 : SERIAL PARSING
+  // -------------------------------------------------------------
+  // Serial commands parser
   if(Serial.available() > 0){
     parseCommand(Serial.readString());
   } // serial available
-}
+  // -------------------------------------------------------------
+  // BLOCK 3 : ANALOG READING
+  // -------------------------------------------------------------
+  // Check if a reading should be done
+  if(analogDutyCycle != ANALOG_DCNONE) {
+    // Read new value
+    inputAnalogDC = readAnalogDutyCycle();
+    // Check if value has changed. We should avoid multiple updates 
+    // as consumes time (especially in the manual duty cycle case)
+    if(inputAnalogDC != lastAnalogDC) {
+      lastAnalogDC = inputAnalogDC;
+      // Update the new analog value
+      switch(analogDutyCycle) {
+        case ANALOG_DCMIN:
+          // Update the motor setting and display
+          motor.setMotorMinDC(inputAnalogDC);
+          lcdShowDutyCycleMin();
+         break;
+        case ANALOG_DCMAX:
+          // Update the motor setting and display
+          motor.setMotorMaxDC(inputAnalogDC);
+          lcdShowDutyCycleMax();
+         break;
+        case ANALOG_DCMAN:
+         break;
+      } //  update switch
+    } // new reading should be updated
+  } // Analog reading is active
+} // Main loop
 
 //! Short loop flashing led for signal
 void flashLED(void) {
@@ -143,15 +177,34 @@ void serialMessage(String title, String description) {
  * \return the reading value
  */
  uint8_t readAnalogDutyCycle(void) {
-   return map(analogRead(ANALOG_DCPIN), 0, 1024, 0, DUTYCYCLE_MAX);
+  int j;
+  int readings;
+  
+  readings = 0;
+  for(j = 0; j < 20; j++) {
+    readings += analogRead(ANALOG_DCPIN);
+  }
+  readings /= 20;
+  
+  return map(readings, 0, 1024, 0, DUTYCYCLE_MAX);
  }
 
-/**
- * Parse the command string and echo the executing message or command unknown error.
+/** ***********************************************************
+ * Parse the command string and echo the executing message or 
+ * command unknown error.
  * 
  * \param commandString the string coming from the serial
+ *  ***********************************************************
  */
  void parseCommand(String commandString) {
+
+  // First disable the analog pot reading. Should be active
+  // only when the duty cycle is set (or when running in manual
+  // dc mode)
+  // Note that the analog reading is reset with ANY commmand, 
+  // including wrong commands. As a matter of fact any character
+  // sent by serial will disable the analog reading of the dc pot
+  analogDutyCycle = ANALOG_DCNONE;
 
   // =========================================================
   // Informative commands
@@ -201,6 +254,7 @@ void serialMessage(String title, String description) {
     for(j = 0; j < MAX_MOTORS; j++) {
       motor.internalStatus[j].isEnabled = true;
     }
+    lcd.clear();
     lcdShowMotor();
     serialMessage(CMD_SET, commandString);
   }
@@ -211,6 +265,7 @@ void serialMessage(String title, String description) {
       motor.internalStatus[j].isEnabled = false;
     }
     lcd.clear();
+    lcdShowMotor();
     serialMessage(CMD_SET, commandString);
   }
   else if(commandString.equals(EN_MOTOR_1)) {
@@ -313,14 +368,12 @@ void serialMessage(String title, String description) {
   // =========================================================
   else if(commandString.equals(MANUAL_DC)) {
     motor.setMotorManualDC(MOTOR_MANUAL_DC);
-    analogDutyCycle = ANALOG_DCMAN;
     showDutyCycle();
     lcdShowDutyCycleManual();
     serialMessage(CMD_MODE, commandString);
   }
   else if(commandString.equals(AUTO_DC)) {
     motor.setMotorManualDC(MOTOR_AUTO_DC);
-    analogDutyCycle = ANALOG_DCNONE;
     showDutyCycle();
     lcdShowDutyCycleAuto();
     serialMessage(CMD_MODE, commandString);
@@ -364,14 +417,13 @@ void showMotorSetting() {
   lcdShowDirection();
 }
 
-//! Show setting mode and current motor (or all)
+//! Show setting mode of current motor (or all)
 void lcdShowMotor() {
   lcd.setCursor(0, 0);
   lcd << "Set M";
   // Show the current motor settings
   if(motor.currentMotor > 0) {
     lcd << motor.currentMotor;    // A motor is selected
-    
     // Check if motor is enabled
     if(motor.internalStatus[motor.currentMotor - 1].isEnabled)
       lcd << "e"; // motor is enabled
@@ -379,7 +431,11 @@ void lcdShowMotor() {
       lcd << "d"; // Motor is disabled
   }
   else {
-    lcd << "*e";   // Undetermined
+    // Check if motor is enabled
+    if(motor.internalStatus[0].isEnabled)
+      lcd << "*e"; // motor is enabled
+    else
+      lcd << "*d"; // Motor is disabled
   }
 
   // Show duty cycle if a motor is selected
@@ -469,11 +525,11 @@ void lcdShowRamp() {
   else
     acc = motor.internalStatus[0].useRamp;
 
-  lcd.setCursor(14, 0);
+  lcd.setCursor(15, 0);
   if(acc)
-    lcd << ">>";
+    lcd << ">";
   else
-    lcd << "..";
+    lcd << ".";
 }
 
 //! Show the rotatin direction of the motor
