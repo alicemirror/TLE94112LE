@@ -92,23 +92,13 @@ through a USB-to-serial connection. The available commands are listed below:
 
 Below the defaault settings table shown on the terminal after a _conf_ command.
 
-> *********************************************************\n
->                 TLE94112LE Motors Configuration
-> *********************************************************
-> __________________________________________________________
-> Motor|Enabled|Accel|Active FW|DC Min|DC Max|DC Man|Dir|PWM
-> -----+-------+-----+---------+------+------+------+---+---
->  M1  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No
-> -----+-------+-----+---------+------+------+------+---+---
->  M2  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No
-> -----+-------+-----+---------+------+------+------+---+---
->  M3  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No
-> -----+-------+-----+---------+------+------+------+---+---
->  M4  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No
-> -----+-------+-----+---------+------+------+------+---+---
->  M5  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No
-> -----+-------+-----+---------+------+------+------+---+---
->  M6  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No
-> -----+-------+-----+---------+------+------+------+---+---
+Motor|Enabled|Accel|Active FW|DC Min|DC Max|DC Man|Dir|PWM
+|-----|-------|-----|---------|------|------|------|---|---|
+| M1  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No|
+| M2  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No|
+| M3  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No|
+| M4  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No|
+| M5  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No|
+| M6  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No|
 
 
