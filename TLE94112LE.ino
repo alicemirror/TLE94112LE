@@ -22,6 +22,11 @@ MotorControl motor;
 //! Analog duty cycle input pin
 #define ANALOG_DCPIN A0
 
+//! Max analog reading range with a 50K potentiometer
+#define MAX_ANALOG_RANGE 255
+//! Min analog reading range with a 50K potentiometer
+#define MIN_ANALOG_RANGE 0
+
 //! If defined every command is echoed on the serial terminal
 #undef _SERIAL_ECHO
 
@@ -56,9 +61,8 @@ void setup() {
 
   analogDutyCycle = ANALOG_DCNONE;
   pinMode(LEDPIN, OUTPUT);   // LED reading signal
-  pinMode(ANALOG_DCPIN, INPUT);
-  // 1.1 V on AVR 328p and 1.8 - 3.3 on the XMC1100
-  analogReference(INTERNAL);  
+  pinMode(ANALOG_DCPIN, INPUT);\
+  analogReference(INTERNAL);
   inputAnalogDC = lastAnalogDC = readAnalogDutyCycle();
 
   flashLED();
@@ -139,6 +143,8 @@ void loop() {
          break;
         case ANALOG_DCMAX:
           // Update the motor setting and display
+          // Map the analog reading value to the high side of the motor dc
+          // range as the analog reading max value is smaller.
           motor.setMotorMaxDC(inputAnalogDC);
           lcdShowDutyCycleMax();
          break;
@@ -171,22 +177,25 @@ void serialMessage(String title, String description) {
 }
 
 /**
- * Read the analog value from potentiometer and convert it in the range
- * 0 - max duty cycle value
+ * Read the analog value from potentiometer.
+ * 
+ * \note With a 50k potentiometer and the 5V reference reading range
+ * is 0-180 so the value is not remapped to any scale
  * 
  * \return the reading value
  */
  uint8_t readAnalogDutyCycle(void) {
   int j;
   int readings;
-  
+  // Get the average on a series of readings
   readings = 0;
-  for(j = 0; j < 20; j++) {
+  for(j = 0; j < 5; j++) {
     readings += analogRead(ANALOG_DCPIN);
   }
-  readings /= 20;
-  
-  return map(readings, 0, 1024, 0, DUTYCYCLE_MAX);
+  readings /= 5;
+  delay(250);
+
+  return map(readings, MIN_ANALOG_RANGE, MAX_ANALOG_RANGE, DUTYCYCLE_MIN, DUTYCYCLE_MAX);
  }
 
 /** ***********************************************************
@@ -474,13 +483,19 @@ void lcdShowDutyCycleManual() {
 //! Set duty cycle min value from analog input
 void lcdShowDutyCycleMin() {
   lcd.setCursor(0, 1);
-  lcd << "min value: " << inputAnalogDC;
+  lcd << "min value: ";
+  if(inputAnalogDC < 100)
+    lcd.print(" ");
+  lcd << inputAnalogDC;
 }
 
 //! Set duty cycle Max value from analog input
 void lcdShowDutyCycleMax() {
   lcd.setCursor(0, 1);
-  lcd << "Max value: " << inputAnalogDC;
+  lcd << "Max value: ";
+  if(inputAnalogDC < 100)
+    lcd.print(" ");
+  lcd << inputAnalogDC;
 }
 
 //! Show the default duty cycle automatic range
