@@ -92,7 +92,7 @@ through a USB-to-serial connection. The available commands are listed below:
 
 Below the defaault settings table shown on the terminal after a _conf_ command.
 
-> *********************************************************
+> *********************************************************\n
 >                 TLE94112LE Motors Configuration
 > *********************************************************
 > __________________________________________________________
