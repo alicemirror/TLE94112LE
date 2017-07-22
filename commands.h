@@ -17,6 +17,7 @@
 
 // Execution notification
 #define CMD_EXEC "executing "
+#define CMD_DONE "done"
 #define CMD_NOCMD "unknown "
 #define CMD_SET "setting "
 #define CMD_MODE "set "
@@ -30,9 +31,10 @@
 #define MOTOR_RAMP "accel"  ///< Enable the acceleration when motor start
 #define MOTOR_NORAMP "noaccel"  ///< Disable the acceleration when motor start
 
-// Start/stop
-#define MOTOR_START "start" ///< stop all
-#define MOTOR_STOP "stop"   ///< stop all
+// Action commands
+#define MOTOR_START "start"   ///< stop all
+#define MOTOR_STOP "stop"     ///< stop all
+#define MOTOR_RESET "reset"   ///< reset the system to the default
 
 //Duty cycle
 #define MANUAL_DC "dcmanual"    ///< Set the duty cycle value depending on the pot

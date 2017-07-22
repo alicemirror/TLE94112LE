@@ -76,12 +76,8 @@ void setup() {
   // initialize the LCD
   lcd.begin(16, 2);
   lcd.setCursor(0,0);
-  // Print a message to the LCD.
-  lcd.print(L_APP_NAME1);
-  lcd.setCursor(0, 1);
-  lcd.print(L_APP_NAME2);
-  delay(3000);
-  lcd.clear();
+
+  lcdIntroMessage();
 }
 
 // ==============================================
@@ -402,8 +398,14 @@ void serialMessage(String title, String description) {
     serialMessage(CMD_MODE, commandString);
   }
   // =========================================================
-  // Motor running
+  // Motor actions
   // =========================================================
+  else if(commandString.equals(MOTOR_RESET)) {
+    Serial << CMD_EXEC << " '" << commandString << "'" << endl;
+    lcdIntroMessage();
+    motor.reset();
+    Serial << CMD_DONE << endl;
+  }
   
   else
     Serial << CMD_WRONGCMD << " '" << commandString << "'" << endl;
@@ -412,6 +414,17 @@ void serialMessage(String title, String description) {
 // ***********************************************************
 // LCD Dispay manager methods
 // ***********************************************************
+
+//! Show the reset introductory message
+void lcdIntroMessage() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print(L_APP_NAME1);
+  lcd.setCursor(0, 1);
+  lcd.print(L_APP_NAME2);
+  delay(3000);
+  lcd.clear();
+}
 
 /**
  * Show the current motor settings if one is selected else
