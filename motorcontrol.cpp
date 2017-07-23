@@ -11,6 +11,10 @@
 
 #include "motorcontrol.h"
 
+// ===============================================================
+// Initialization and reset methods
+// ===============================================================
+
 void MotorControl::begin(void) {
   // enable tle94112
   tle94112.begin();
@@ -41,12 +45,13 @@ void MotorControl::reset() {
   } // loop on the PWM channels array
 
   resetHB();
+  resetPWM();
   currentPWM = 0; // No PWM channels selected
   currentMotor = 0; // No motors selected
 }
 
 void MotorControl::resetHB(void) {
-    // Set all the half bridges to disabled (motors stopped)
+  // Set all the half bridges floating without pwm
   tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
   tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
   tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
@@ -61,9 +66,19 @@ void MotorControl::resetHB(void) {
   tle94112.configHB(tle94112.TLE_HB12, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
 }
 
+void MotorControl::resetPWM(void) {
+  // Initialize the PWM channels to the corresponding frequency and duty cycle 0
+  tle94112.configPWM(tle94112.TLE_PWM1, tle94112.TLE_FREQ80HZ, (uint8_t)0);
+  tle94112.configPWM(tle94112.TLE_PWM2, tle94112.TLE_FREQ100HZ, (uint8_t)0);
+  tle94112.configPWM(tle94112.TLE_PWM3, tle94112.TLE_FREQ200HZ, (uint8_t)0);
+}
+
+// ===============================================================
+// Setting motor parameters methods
+// ===============================================================
+
 void MotorControl::setPWM(uint8_t pwmCh) {
   if(currentMotor != 0) {
-    // We are setting a specific mmotor
     internalStatus[currentMotor - 1].channelPWM = pwmCh;
   }
   else {
@@ -76,7 +91,6 @@ void MotorControl::setPWM(uint8_t pwmCh) {
 
 void MotorControl::setMotorDirection(int dir) {
   if(currentMotor != 0) {
-    // We are setting a specific mmotor
     internalStatus[currentMotor - 1].motorDirection = dir;
   }
   else {
@@ -89,7 +103,6 @@ void MotorControl::setMotorDirection(int dir) {
 
 void MotorControl::setMotorRamp(boolean acc) {
   if(currentMotor != 0) {
-    // We are setting a specific mmotor
     internalStatus[currentMotor - 1].useRamp = acc;
   }
   else {
@@ -102,7 +115,6 @@ void MotorControl::setMotorRamp(boolean acc) {
 
 void MotorControl::setMotorFreeWheeling(boolean fw) {
   if(currentMotor != 0) {
-    // We are setting a specific mmotor
     internalStatus[currentMotor - 1].freeWheeling = fw;
   }
   else {
@@ -112,10 +124,10 @@ void MotorControl::setMotorFreeWheeling(boolean fw) {
     }
   }
 }
+// ===============================================================
 
 void MotorControl::setPWMManualDC(boolean dc) {
   if(currentPWM != 0) {
-    // We are setting a specific PWM channel
     dutyCyclePWM[currentPWM - 1].manDC = dc;
   }
   else {

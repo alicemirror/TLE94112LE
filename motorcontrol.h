@@ -18,7 +18,7 @@
 
 
 /**
- * Internal status of a generic motor
+ * All the state flas and value settings for a generic motor
  */
 struct motorStatus {
   boolean useRamp;        ///< Use acceleration/deceleration cycle when starting
@@ -40,8 +40,20 @@ struct pwmStatus {
 };
 
 /**
- * \brief  Class that manages the TLE94112 Arduino shield
- * controlling the filament motor
+ * \brief  Class to control the TLE94112 Arduino shield
+ * 
+ * The class control three PWM channels and two ranges of motors.
+ * If _HIGH_CURRENT is defined are used two half bridges every motor pole
+ * so only 3 max motors are allowed else 6 motors can be managed
+ * 
+ * In this class we define an hardcoded assumption presetting the three PWM 
+ * frequencies associated by default to the three channels. 
+ * A different frequency can be associated
+ * to every motor selecting the corresponding PWM channel ID.\n
+ * With this choice we loose the option to assgin the same frequency to two
+ * different PWM channels and different duty cycles but it a meaningless
+ * limitation that can be considered acceptable considering the flexibility
+ * of the entire class.
  */
 class MotorControl {
   public:
@@ -76,9 +88,18 @@ class MotorControl {
     void reset(void);
 
     /**
-     * Reset all the half bridges immediately stopping the motors
+     * \brief Reset all the half bridges immediately stopping the motors
      */
     void resetHB(void);
+
+    /**
+     * \brief Reset the PWM channels setting the duty cycle to 0
+     * 
+     * \note This method is also used in the initialization phase of the
+     * start command to avoid that the motors with PWM assigned will star
+     * before the end of the start settings.
+     */
+    void resetPWM(void);
 
     /**
      * \brief Set the desired PWM channel to the current motor if one
