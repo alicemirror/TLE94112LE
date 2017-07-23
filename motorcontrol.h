@@ -16,6 +16,7 @@
 #include <TLE94112.h>
 #include "motor.h"
 
+
 /**
  * Internal status of a generic motor
  */
@@ -116,61 +117,6 @@ class MotorControl {
     void setMotorMaxDC(uint8_t dc);
 
     /**
-     * \brief Accelerates to the regime speed for filament release then 
-     * keep the regime speed for the needed number of milliseconds
-     * to release a lenght of filament then decelerate until motor stop
-     * 
-     * \note The feedExtruder() speed is slower than the normal filamentFeed()
-     * method. The typical duration for this method should be FEED_EXTRUDER_DELAY
-     * This method is uninterruptable as it uses internal delays
-     * 
-     * \param duration the numer of ms to feed at the regime speed
-     */
-    void rotateCW(long duration);
-  
-    /**
-     * \brief Accelerates to the regime speed for filament release then 
-     * keep the regime speed for the needed number of milliseconds
-     * to release a lenght of filament then decelerate until motor stop
-     * 
-     * \note The filamentFeed() speed is faster than the normal feedExtruder()
-     * method. This method is uninterruptable as it uses internal delays
-     * 
-     * \param duration the numer of ms to feed at the regime speed
-     */
-    void filamentFeed(long duration);
-
-    /**
-     * \brief Accelerates to the regime speed for filament release then 
-     * keep the regime speed until the motor is stopped
-     * 
-     * \note This method is interruptable and doe not check for errors
-     * internally. It runs indefinitely until a stop command is sent
-     */
-    void filamentContFeed(void);
-
-    /**
-     * \brief Accelerates to the regime speed for filament load then 
-     * keep the regime speed for the needed number of milliseconds
-     * to release a lenght of filament then decelerate until motor stop
-     * 
-     * \note The filamentLoad()is the complimentary method than filamentFeed(0
-     * as it runs in the opposite direction
-     * 
-     * \param duration the numer of ms to feed at the regime speed
-     */
-    void filamentLoad(long duration);
-
-    /**
-     * \brief Accelerates to the regime speed for filament load then 
-     * keep the regime speed until the motor is stopped
-     * 
-     * \note This method is interruptable and doe not check for errors
-     * internally. It runs indefinitely until a stop command is sent
-     */
-    void filamentContLoad(void);
-
-    /**
      * \brief Accelerates to the regime speed then 
      * keep the regime speed for the needed number of milliseconds
      * then decelerate until motor stop
@@ -184,7 +130,7 @@ class MotorControl {
      * \param accdelay pause ms during the acceleration/deceleration loops
      * \param duration numer of ms at the regime speed
      */
-    void motorRun(int minDC, int maxDC, int accdelay, long duration, int motorDirection);
+//    void motorRun(int minDC, int maxDC, int accdelay, long duration, int motorDirection);
 
     /**
      * \brief Accelerates to the regime speed then 
@@ -194,32 +140,54 @@ class MotorControl {
      * \param maxDC maximum duty cycle value
      * \param accdelay pause ms during the acceleration/deceleration loops
      */
-    void motorStart(int minDC, int maxDC, int accdelay, int motorDirection);
+//    void motorStart(int minDC, int maxDC, int accdelay, int motorDirection);
 
     /**
      * \brief Brake the motor keelping the half bridges high
      */
-    void motorBrake();
+//    void motorBrake();
 
     /**
      * \brief Configure the halfbridges of all the motors. 
      * 
-     * This method should be called before executing a start command.
+     * This method should be called during start global command.
      * The method loop on all motors and call recursively the same
-     * polymorphic method with the setup parameters for any single motor
-     * 
+     * polymorphic method that exectues the real setup for the motor
+     * based on the direction.
      */
     void motorConfigHB(void);
 
     /**
-     * \brief Configure the halfbridges of the specified motor
+     * \brief Configure the halfbridges of the specified motor. 
      * 
-     * Thie methodexecutes the settings of the specified motor according with
-     * the currently settings and parameters
+     * This method should be called to setup a single motor.
+     * If the selected motor is not enabled the command has no effect else
+     * it calls the motorConfigHBCW() or motorConfigHBCW() according with the
+     * motor selected direction.
      * 
-     * \param motor The motor ID to be configured
+     * \param motor The motor ID to be configured (base 0)
      */
     void motorConfigHB(int motor);
+
+    /**
+     * \brief Configure the halfbridges of the specified motor, clowckwise direction
+     * 
+     * Thie method setup the HB the specified motor according with
+     * its currently settings and parameters configured in the internalStatus[] array
+     * 
+     * \param motor The motor ID to be configured (base 0)
+     */
+    void motorConfigHBCW(int motor);
+
+    /**
+     * \brief Configure the halfbridges of the specified motor, counterclowckwise direction
+     * 
+     * Thie method setup the HB the specified motor according with
+     * its currently settings and parameters configured in the internalStatus[] array
+     * 
+     * \param motor The motor ID to be configured (base 0)
+     */
+    void motorConfigHBCCW(int motor);
 
     /** 
      * \brief Show Current motors configuration in a table on the serial terminal

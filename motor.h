@@ -14,7 +14,7 @@
 #define _MOTOR
 
 //! Application title shown on startup
-#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.10"
+#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.11"
 
 //! For high current coupling half bridges together 1&2, 3&4
 #undef _HIGHCURRENT
@@ -59,18 +59,12 @@
   //! Calculate the first half bridge number depending
   //! on the motor number
   #define calcHB1(x) ((x - 1) * 4 + 1)
-  //! Calculate the second half bridge number depending
-  //! on the motor number
-  #define calcHB2(x) ((x - 1) * 4 + 3)
 #else
   //! In normal current mode every motor uses two half bridges
   #define MAX_MOTORS 6
   //! Calculate the first half bridge number depending
   //! on the motor number
   #define calcHB1(x) ((x - 1) * 2 + 1)
-  //! Calculate the first half bridge number depending
-  //! on the motor number
-  #define calcHB2(x) ((x - 1) * 2 + 2)
 #endif
 
 //! Error title
