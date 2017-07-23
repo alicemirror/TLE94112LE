@@ -166,35 +166,14 @@ class MotorControl {
     void setPWMMaxDC(uint8_t dc);
 
     /**
-     * \brief Accelerates to the regime speed then 
-     * keep the regime speed for the needed number of milliseconds
-     * then decelerate until motor stop
-     * 
-     * \note This method is used by the uninterruptable methods feedExtruder().
-     * filamentFeed() and filamentLoad(). It is a public method for convenience
-     * but it is not expected to be used in the normal usage
-     * 
-     * \param minDC mnimumn duty cycle value
-     * \param maxDC maximum duty cycle value
-     * \param accdelay pause ms during the acceleration/deceleration loops
-     * \param duration numer of ms at the regime speed
+     * \brief Start all enabled motors
      */
-//    void motorRun(int minDC, int maxDC, int accdelay, long duration, int motorDirection);
+    void startMotors();
 
     /**
-     * \brief Accelerates to the regime speed then 
-     * keep the motor running
-     * 
-     * \param minDC mnimumn duty cycle value
-     * \param maxDC maximum duty cycle value
-     * \param accdelay pause ms during the acceleration/deceleration loops
+     * \brief Stop all running motors
      */
-//    void motorStart(int minDC, int maxDC, int accdelay, int motorDirection);
-
-    /**
-     * \brief Brake the motor keelping the half bridges high
-     */
-//    void motorBrake();
+    void stopMotors();
 
     /**
      * \brief Configure the halfbridges of all the motors. 
@@ -231,12 +210,28 @@ class MotorControl {
     /**
      * \brief Configure the halfbridges of the specified motor, counterclowckwise direction
      * 
-     * Thie method setup the HB the specified motor according with
+     * This method setup the HB the specified motor according with
      * its currently settings and parameters configured in the internalStatus[] array
      * 
      * \param motor The motor ID to be configured (base 0)
      */
     void motorConfigHBCCW(int motor);
+
+    /*
+     * \brief Stop all running motors
+     * 
+     * This method stops immediately all running motors resetting the half bridges
+     * and deactivating the PWM if active
+     */
+    void motorStopHB(void);
+
+    /*
+     * \brief Stop the specified motor
+     * 
+     * This method stops immediately the selected motor resetting the half bridges
+     * and deactivating the PWM if active
+     */
+    void motorStopHB(int motor);
 
     /** 
      * \brief Show Current motors configuration in a table and the PWM settings on

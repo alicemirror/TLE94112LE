@@ -124,7 +124,6 @@ void MotorControl::setMotorFreeWheeling(boolean fw) {
     }
   }
 }
-// ===============================================================
 
 void MotorControl::setPWMManualDC(boolean dc) {
   if(currentPWM != 0) {
@@ -308,21 +307,116 @@ void MotorControl::setPWMMaxDC(uint8_t dc) {
 //  }
 //}
 
+// ===============================================================
+// Motor control
+// ===============================================================
+
+void MotorControl::startMotors() {
+  motorConfigHB();
+}
+
+void MotorControl::stopMotors() {
+  motorStopHB();
+}
+
+// ===============================================================
+// Half bridges configuraton
+// ===============================================================
+
 void MotorControl::motorConfigHB(void) {
   int j;
-
-    for(j == 0; j < MAX_MOTORS; j++) {
+    for(j = 0; j < MAX_MOTORS; j++) {
       motorConfigHB(j);
     }
 }
 
 void MotorControl::motorConfigHB(int motor) {
-
   if(internalStatus[motor].isEnabled) {
     if(internalStatus[motor].motorDirection == MOTOR_DIRECTION_CW)
       motorConfigHBCW(motor);
     else
       motorConfigHBCCW(motor);
+  }
+}
+
+void MotorControl::motorStopHB(void) {
+  int j;
+    for(j = 0; j < MAX_MOTORS; j++) {
+      if(internalStatus[j].isRunning)
+        motorStopHB(j);
+    }
+}
+
+void MotorControl::motorStopHB(int motor) {
+  int hb1;
+
+  // Calculate the first half bridge depending on the motor ID
+  // Note that HB are numbered base 1 while motor is index array base 0
+  // and HB usage is different if high current mode is selected in the
+  // preprocessor directive
+  hb1 = calcHB1(motor + 1);
+
+  // Set motor stopped
+  internalStatus[motor].isRunning = false;
+  
+  // Select the half bridges to configure the motor.
+  // Depending on the mode (normal = 1 + 1 HB per motor, high current = 2+2)
+  // not all the half bridges can be the first (=hb1)
+  switch(hb1) {
+    // -------------------------------------------------
+    // Motor 1 (in both modes)
+    // -------------------------------------------------
+    case 1: 
+      tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+      tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+      #ifdef _HIGHCURRENT
+      tle94112.configHB(tle94112.TLE_HB3,  tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+      tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+      #endif
+    break;
+    // -------------------------------------------------
+    // Motor 2 (no high current mode)
+    // -------------------------------------------------
+    case 3: 
+      tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+      tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+    break;
+    // -------------------------------------------------
+    // Motor 3 (Motor 2 in high current mode)
+    // -------------------------------------------------
+    case 5: 
+      tle94112.configHB(tle94112.TLE_HB5, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+      tle94112.configHB(tle94112.TLE_HB6, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+      #ifdef _HIGHCURRENT
+      tle94112.configHB(tle94112.TLE_HB7,  tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+      tle94112.configHB(tle94112.TLE_HB8, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+      #endif
+    break;
+    // -------------------------------------------------
+    // Motor 4 (no high current mode)
+    // -------------------------------------------------
+    case 7:  
+      tle94112.configHB(tle94112.TLE_HB7, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+      tle94112.configHB(tle94112.TLE_HB8, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+    break;
+    // -------------------------------------------------
+    // Motor 5 ((Motor 3 in high current mode)
+    // -------------------------------------------------
+    case 9: 
+      tle94112.configHB(tle94112.TLE_HB9, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+      tle94112.configHB(tle94112.TLE_HB10, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+      #ifdef _HIGHCURRENT
+      tle94112.configHB(tle94112.TLE_HB11,  tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+      tle94112.configHB(tle94112.TLE_HB12, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+      #endif
+    break;
+    // -------------------------------------------------
+    // Motor 6 (no high current mode)
+    // -------------------------------------------------
+    case 11:
+      tle94112.configHB(tle94112.TLE_HB11, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+      tle94112.configHB(tle94112.TLE_HB12, tle94112.TLE_FLOATING, tle94112.TLE_NOPWM);
+    break;
   }
 }
 
@@ -335,6 +429,9 @@ void MotorControl::motorConfigHBCW(int motor) {
   // preprocessor directive
   hb1 = calcHB1(motor + 1);
 
+  // Set motor running
+  internalStatus[motor].isRunning = true;
+  
   // Select the half bridges to configure the motor.
   // Depending on the mode (normal = 1 + 1 HB per motor, high current = 2+2)
   // not all the half bridges can be the first (=hb1)
@@ -522,6 +619,9 @@ void MotorControl::motorConfigHBCCW(int motor) {
   // preprocessor directive
   hb1 = calcHB1(motor + 1);
 
+  // Set motor stopped
+  internalStatus[motor].isRunning = true;
+  
   // Select the half bridges to configure the motor.
   // Depending on the mode (normal = 1 + 1 HB per motor, high current = 2+2)
   // not all the half bridges can be the first (=hb1)
@@ -718,12 +818,62 @@ void MotorControl::motorConfigHBCCW(int motor) {
   }
 }
 
+// ===============================================================
+// Diagnostic methods
+// ===============================================================
+
 boolean MotorControl:: tleCheckDiagnostic(void) {
   if(tle94112.getSysDiagnosis() == tle94112.TLE_STATUS_OK)
     return false;
   else
     return true;
 }
+
+void MotorControl::tleDiagnostic() {
+  int diagnosis = tle94112.getSysDiagnosis();
+
+  if(diagnosis == tle94112.TLE_STATUS_OK) {
+    Serial.println(TLE_NOERROR);
+  } // No errors
+  else {
+    // Open load error can be ignored
+    if(tle94112.getSysDiagnosis(tle94112.TLE_LOAD_ERROR)) {
+#ifndef _IGNORE_OPENLOAD
+      Serial.println(TLE_ERROR_MSG);
+      Serial.println(TLE_LOADERROR);
+      Serial.println("");
+#endif
+    } // Open load error
+    else {
+      Serial.println(TLE_ERROR_MSG);
+      if(tle94112.getSysDiagnosis(tle94112.TLE_SPI_ERROR)) {
+        Serial.println(TLE_SPIERROR);
+      }
+      if(tle94112.getSysDiagnosis(tle94112.TLE_UNDER_VOLTAGE)) {
+        Serial.println(TLE_UNDERVOLTAGE);
+      }
+      if(tle94112.getSysDiagnosis(tle94112.TLE_OVER_VOLTAGE)) {
+        Serial.println(TLE_OVERVOLTAGE);
+      }
+      if(tle94112.getSysDiagnosis(tle94112.TLE_POWER_ON_RESET)) {
+        Serial.println(TLE_POWERONRESET);
+      }
+      if(tle94112.getSysDiagnosis(tle94112.TLE_TEMP_SHUTDOWN)) {
+        Serial.println(TLE_TEMPSHUTDOWN);
+      }
+      if(tle94112.getSysDiagnosis(tle94112.TLE_TEMP_WARNING)) {
+        Serial.println(TLE_TEMPWARNING);
+      }
+      Serial.println("");
+    } // Any other error
+    // Clear all possible error conditions        
+    tle94112.clearErrors();
+  } // Error condition
+}
+
+// ===============================================================
+// Dump system configuration to serial
+// ===============================================================
 
 void MotorControl::showInfo(void) {
   int j;
@@ -808,47 +958,6 @@ void MotorControl::showInfo(void) {
   }
 }
 
-void MotorControl::tleDiagnostic() {
-  int diagnosis = tle94112.getSysDiagnosis();
-
-  if(diagnosis == tle94112.TLE_STATUS_OK) {
-    Serial.println(TLE_NOERROR);
-  } // No errors
-  else {
-    // Open load error can be ignored
-    if(tle94112.getSysDiagnosis(tle94112.TLE_LOAD_ERROR)) {
-#ifndef _IGNORE_OPENLOAD
-      Serial.println(TLE_ERROR_MSG);
-      Serial.println(TLE_LOADERROR);
-      Serial.println("");
-#endif
-    } // Open load error
-    else {
-      Serial.println(TLE_ERROR_MSG);
-      if(tle94112.getSysDiagnosis(tle94112.TLE_SPI_ERROR)) {
-        Serial.println(TLE_SPIERROR);
-      }
-      if(tle94112.getSysDiagnosis(tle94112.TLE_UNDER_VOLTAGE)) {
-        Serial.println(TLE_UNDERVOLTAGE);
-      }
-      if(tle94112.getSysDiagnosis(tle94112.TLE_OVER_VOLTAGE)) {
-        Serial.println(TLE_OVERVOLTAGE);
-      }
-      if(tle94112.getSysDiagnosis(tle94112.TLE_POWER_ON_RESET)) {
-        Serial.println(TLE_POWERONRESET);
-      }
-      if(tle94112.getSysDiagnosis(tle94112.TLE_TEMP_SHUTDOWN)) {
-        Serial.println(TLE_TEMPSHUTDOWN);
-      }
-      if(tle94112.getSysDiagnosis(tle94112.TLE_TEMP_WARNING)) {
-        Serial.println(TLE_TEMPWARNING);
-      }
-      Serial.println("");
-    } // Any other error
-    // Clear all possible error conditions        
-    tle94112.clearErrors();
-  } // Error condition
-}
 
 
 

@@ -435,6 +435,14 @@ void serialMessage(String title, String description) {
     motor.reset();
     Serial << CMD_DONE << endl;
   }
+  else if(commandString.equals(MOTOR_START)) {
+    lcdShowStarting();
+    motor.startMotors();
+  }
+  else if(commandString.equals(MOTOR_STOP)) {
+    lcdShowStopping();
+    motor.stopMotors();
+  }
   
   else
     Serial << CMD_WRONGCMD << " '" << commandString << "'" << endl;
@@ -627,5 +635,26 @@ void lcdShowDirection() {
     lcd << " CW";
   else
     lcd << "CCW";
+}
+
+//! Show the starting state
+void lcdShowStarting() {
+  lcd.clear();
+  lcd.setCursor(9, 1);
+  lcd << "Starting";
+}
+
+//! Show the stopping state
+void lcdShowStopping() {
+  lcd.clear();
+  lcd.setCursor(9, 1);
+  lcd << "Stopping";
+}
+
+//! Show the running state
+void lcdShowRunning() {
+  lcd.clear();
+  lcd.setCursor(9, 1);
+  lcd << "Starting";
 }
 
