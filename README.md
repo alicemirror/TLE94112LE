@@ -48,57 +48,81 @@ through a USB-to-serial connection. The available commands are listed below:
 - __accel__ : Enable the acceleration when motor start
 - __noaccel__ : Disable the acceleration when motor start
 
-### Action commands
-- __start__ : start running
-- __stop__ : stop all
+### Global action commands
+- __start__ : start all motors
+- __stop__ : stop all motors
 - __reset__ : reset the system to the default
 
-### Duty cycle
+### Single motor action commands
+- __m1on__ : start motor 1
+- __m2on__ : start motor 2
+- __m3on__ : start motor 3
+- __m4on__ : start motor 4
+- __m5on__ : start motor 5
+- __m6on__ : start motor 6
+- __m1off__ : stop motor 1 
+- __m2off__ : stop motor 2
+- __m3off__ : stop motor 3
+- __m4off__ : stop motor 4 
+- __m5off__ : stop motor 5
+- __m6off__ : stop motor 6
+
+### Duty cycle settings to PWM channels
 - __dcmanual__ : Set the duty cycle value depending on the pot
 - __dcauto__ : Set the duty cycle current limits
 - __dcmin__ : Set the min duty cycle value via pot
 - __dcmax__ : Set the max duty cycle value via pot
 
-### Motor select flag for settings
-- __all__ : All motors selected and enabled
-- __none__ : No motors disabled and disabled
-- __m1__ : select motor
-- __m2__ : select motor
-- __m3__ : select motor
-- __m4__ : select motor
-- __m5__ : select motor
-- __m6__ : select motor
+### PWM channel selection for duty cycle settings
+- __dc80__ : Set the duty cycle to the PWM channel 80Hz
+- __dc100__ : Set the duty cycle to the PWM channel 100Hz
+- __dc200__ : Set the duty cycle to the PWM channel 200Hz
+- __dcPWM__ : Set the duty cycle to the all the PWM channels
+
+### Motor select for settings
+- __all__ : Select and enable all motors
+- __none__ : Disble all motors and deselect
+- __m1__ : select motor 1
+- __m2__ : select motor 2
+- __m3__ : select motor 3
+- __m4__ : select motor 4
+- __m5__ : select motor 5
+- __m6__ : select motor 6
 
 ### Motor enable
-- __m1+__ : enable motor
-- __m2+__ : enable motor
-- __m3+__ : enable motor
-- __m4+__ : enable motor
-- __m5+__ : enable motor
-- __m6+__ : enable motor
+- __m1+__ : enable motor 1
+- __m2+__ : enable motor 2
+- __m3+__ : enable motor 3
+- __m4+__ : enable motor 4
+- __m5+__ : enable motor 5
+- __m6+__ : enable motor 6
 
-### PWM Frequency selector
+### PWM Frequency selector (assign PWM channels to motors)
 - __noPWM__ : No PWM
 - __80__ : PWM 80 Hz
 - __100__ : PWM 100 Hz
 - __200__ : PWM 200 Hz
 
-### Freewheeling mode
+### Freewheeling mode motor(s) setting
 - __fwactive__ : Fereewheeling active
 - __fwpassive__ : Freewheeling passive
 
-### Information commands
+### Show all motorws configuration
 - __conf__ : Dump the current settings
 
-Below the defaault settings table shown on the terminal after a _conf_ command.
+### Configuration dump
+Below the defaault settings tables shown on the terminal after a _conf_ command
+call.
 
-Motor|Enabled|Accel|Active FW|DC Min|DC Max|DC Man|Dir|PWM
-|-----|-------|-----|---------|------|------|------|---|---|
-| M1  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No|
-| M2  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No|
-| M3  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No|
-| M4  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No|
-| M5  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No|
-| M6  |   No  |  No |   Yes   |  50  | 255  |   No | CW| No|
+### Motos settings
 
+Motor|Enabled|Accel|Active FW|Dir|PWM
+|-----|-------|-----|---------|---|---|
+| M1  |   No  |  No |   Yes   | CW| No|
+| M2  |   No  |  No |   Yes   | CW| No|
+| M3  |   No  |  No |   Yes   | CW| No|
+| M4  |   No  |  No |   Yes   | CW| No|
+| M5  |   No  |  No |   Yes   | CW| No|
+| M6  |   No  |  No |   Yes   | CW| No|
 
+### PWM settings
