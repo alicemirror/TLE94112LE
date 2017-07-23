@@ -114,10 +114,10 @@ through a USB-to-serial connection. The available commands are listed below:
 Below the defaault settings tables shown on the terminal after a _conf_ command
 call.
 
-### Motoes settings
+### Motors settings
 
-|Motor|Enabled|Accel|Active FW|Dir|PWM|
-|-----+-------+-----+---------+---+---|
+Motor|Enabled|Accel|Active FW|Dir|PWM
+|-----|-------|-----|---------|---|---|
 | M1  |   No  |  No |   Yes   | CW| No|
 | M2  |   No  |  No |   Yes   | CW| No|
 | M3  |   No  |  No |   Yes   | CW| No|
@@ -127,8 +127,8 @@ call.
 
 ### PWM settings
 
-|PWM Chan|DC Min|DC Max|DC Man|
-|--------+------+------+------|
+PWM Chan|DC Min|DC Max|DC Man
+|--------+|------|------|------|
 |  80 Hz |  50  | 255  |   No |
 | 100 Hz |  50  | 255  |   No |
 | 200 Hz |  50  | 255  |   No |
