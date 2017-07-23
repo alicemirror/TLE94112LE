@@ -72,6 +72,7 @@ through a USB-to-serial connection. The available commands are listed below:
 - __dcauto__ : Set the duty cycle current limits
 - __dcmin__ : Set the min duty cycle value via pot
 - __dcmax__ : Set the max duty cycle value via pot
+- __dcinfo__ : Shows the duty cycle range for the selected PWM channel
 
 ### PWM channel selection for duty cycle settings
 - __dc80__ : Set the duty cycle to the PWM channel 80Hz
