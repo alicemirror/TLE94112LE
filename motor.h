@@ -49,6 +49,9 @@
 #define DUTYCYCLE_MAX 255   ///< Maximum duty cycle
 
 #define AVAIL_PWM_CHANNELS 3 ///< Number of available PWM channels (excluding the NOPWM mode)
+#define PWM80_CHID 1      ///< ID for PWM channel 80 Hz
+#define PWM100_CHID 2     ///< ID for PWM channel 100 Hz
+#define PWM200_CHID 3    ///< ID for PWM channel 200 Hz
 
 /**
  * When _HIGHCURRENT is set every motor needs 2+2 half bridges to double the needed power

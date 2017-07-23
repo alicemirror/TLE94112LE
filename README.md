@@ -111,8 +111,8 @@ through a USB-to-serial connection. The available commands are listed below:
 - __conf__ : Dump the current settings
 
 ### Configuration dump
-Below the defaault settings tables shown on the terminal after a _conf_ command
-call.
+Below the default settings in the tables shown on the terminal 
+after a _conf_ command call.
 
 ### Motors settings
 

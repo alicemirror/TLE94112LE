@@ -149,6 +149,8 @@ void loop() {
       } //  update switch
     } // new reading should be updated
   } // Analog reading is active
+
+  flashLED();
 } // Main loop
 
 //! Short loop flashing led for signal
@@ -310,49 +312,83 @@ void serialMessage(String title, String description) {
     serialMessage(CMD_SET, commandString);
   }
   // =========================================================
-  // PWM channel select
+  // PWM channel motors assignment
   // =========================================================
   else if(commandString.equals(PWM_0)) {
     motor.setPWM(tle94112.TLE_NOPWM);
-    lcdShowPWM();
+    showMotorSetting();
+//    lcdShowMotorPWM();
     serialMessage(CMD_PWM, commandString);
   }
   else if(commandString.equals(PWM_80)) {
     motor.setPWM(tle94112.TLE_PWM1);
-    lcdShowPWM();
+    showMotorSetting();
+//    lcdShowMotorPWM();
     serialMessage(CMD_PWM, commandString);
   }
   else if(commandString.equals(PWM_100)) {
     motor.setPWM(tle94112.TLE_PWM2);
-    lcdShowPWM();
+    showMotorSetting();
+//    lcdShowMotorPWM();
     serialMessage(CMD_PWM, commandString);
   }
   else if(commandString.equals(PWM_200)) {
     motor.setPWM(tle94112.TLE_PWM3);
-    lcdShowPWM();
+    showMotorSetting();
+//    lcdShowMotorPWM();
     serialMessage(CMD_PWM, commandString);
+  }
+
+//      showDutyCycle();
+
+  // =========================================================
+  // PWM channel select for duty cycle setting
+  // =========================================================
+  else if(commandString.equals(PWM80_DC)) {
+    motor.currentPWM = PWM80_CHID;
+    showPWMSetting();
+    serialMessage(CMD_SET, commandString);
+  }
+  else if(commandString.equals(PWM100_DC)) {
+    motor.currentPWM = PWM100_CHID;
+    showPWMSetting();
+    serialMessage(CMD_SET, commandString);
+  }
+  else if(commandString.equals(PWM200_DC)) {
+    motor.currentPWM = PWM200_CHID;
+    showPWMSetting();
+    serialMessage(CMD_SET, commandString);
+  }
+  else if(commandString.equals(PWMALL_DC)) {
+    motor.currentPWM = 0;
+    showPWMSetting();
+    serialMessage(CMD_SET, commandString);
   }
   // =========================================================
   // Direction and acceleration setting
   // =========================================================
   else if(commandString.equals(DIRECTION_CW)) {
     motor.setMotorDirection(MOTOR_DIRECTION_CW);
-    lcdShowDirection();
+    showMotorSetting();
+//    lcdShowDirection();
     serialMessage(CMD_DIRECTION, commandString);
   }
   else if(commandString.equals(DIRECTION_CCW)) {
     motor.setMotorDirection(MOTOR_DIRECTION_CCW);
-    lcdShowDirection();
+    showMotorSetting();
+//    lcdShowDirection();
     serialMessage(CMD_DIRECTION, commandString);
   }
   else if(commandString.equals(MOTOR_RAMP)) {
     motor.setMotorRamp(RAMP_ON);
-    lcdShowRamp();
+    showMotorSetting();
+//    lcdShowRamp();
     serialMessage(CMD_MODE, commandString);
   }
   else if(commandString.equals(MOTOR_NORAMP)) {
     motor.setMotorRamp(RAMP_OFF);
-    lcdShowRamp();
+    showMotorSetting();
+//    lcdShowRamp();
     serialMessage(CMD_MODE, commandString);
   }
   // =========================================================
@@ -360,12 +396,14 @@ void serialMessage(String title, String description) {
   // =========================================================
   else if(commandString.equals(FW_ACTIVE)) {
     motor.setMotorFreeWheeling(MOTOR_FW_ACTIVE);
-    lcdShowFreeWheeling();
+    showMotorSetting();
+//    lcdShowFreeWheeling();
     serialMessage(CMD_MODE, commandString);
   }
   else if(commandString.equals(FW_PASSIVE)) {
     motor.setMotorFreeWheeling(MOTOR_FW_PASSIVE);
-    lcdShowFreeWheeling();
+    showMotorSetting();
+//    lcdShowFreeWheeling();
     serialMessage(CMD_MODE, commandString);
   }
   // =========================================================
@@ -373,28 +411,32 @@ void serialMessage(String title, String description) {
   // =========================================================
   else if(commandString.equals(MANUAL_DC)) {
     motor.setPWMManualDC(MOTOR_MANUAL_DC);
-    showDutyCycle();
+    showPWMSetting();
     lcdShowDutyCycleManual();
     serialMessage(CMD_MODE, commandString);
   }
   else if(commandString.equals(AUTO_DC)) {
     motor.setPWMManualDC(MOTOR_AUTO_DC);
-    showDutyCycle();
+    showPWMSetting();
     lcdShowDutyCycleAuto();
     serialMessage(CMD_MODE, commandString);
   }
   else if(commandString.equals(MIN_DC)) {
     analogDutyCycle = ANALOG_DCMIN;
     motor.setPWMMinDC(inputAnalogDC);
-    showDutyCycle();
+    showPWMSetting();
     lcdShowDutyCycleMin();
     serialMessage(CMD_MODE, commandString);
   }
   else if(commandString.equals(MAX_DC)) {
     analogDutyCycle = ANALOG_DCMAX;
     motor.setPWMMaxDC(inputAnalogDC);
-    showDutyCycle();
+    showPWMSetting();
     lcdShowDutyCycleMax();
+    serialMessage(CMD_MODE, commandString);
+  }
+  else if(commandString.equals(INFO_DC)) {
+    showPWMInfo();
     serialMessage(CMD_MODE, commandString);
   }
   // =========================================================
@@ -433,10 +475,19 @@ void lcdIntroMessage() {
 void showMotorSetting() {
   lcd.clear();
   lcdShowMotor();
-  lcdShowPWM();
+  lcdShowMotorPWM();
   lcdShowFreeWheeling();
   lcdShowRamp();
   lcdShowDirection();
+}
+
+/**
+ * Show the current PWM settings if a channel is selected 
+ * else only show the setting display mode
+ */
+void showPWMSetting() {
+  lcd.clear();
+  lcdShowPWM();
 }
 
 //! Show setting mode of current motor (or all)
@@ -459,39 +510,43 @@ void lcdShowMotor() {
     else
       lcd << "*d"; // Motor is disabled
   }
-
-  // Show duty cycle if a motor is selected
-//    lcd.setCursor(4, 1);
-//  if(motor.currentMotor > 0)
-//    lcd << "(" << motor.internalStatus[motor.currentMotor - 1].minDC << "-" << motor.internalStatus[motor.currentMotor - 1].maxDC << ")";
 }
 
-//! Show duty cycle settings header
-void showDutyCycle() {
-  String pwmChannels[] = { " 80Hz", "100Hz", "200Hz" };
-  lcd.clear();
+//! Show setting mode of current PWM channel (or all)
+void lcdShowPWM() {
+  String pwmNames[] = { "  80Hz", " 100Hz", " 200Hz" };
+
   lcd.setCursor(0, 0);
-  lcd << "PWM ";
+  lcd << "Set PWM[";
   // Show the current motor settings
   if(motor.currentPWM > 0) {
-    lcd << pwmChannels[motor.currentPWM - 1];    // A PWM Channel is selected
+    lcd << motor.currentPWM << "]" << pwmNames[motor.currentPWM - 1];
   }
   else {
-    lcd << " all channels";   // Undetermined
+      lcd << "*] All";
   }
-  lcd << " Duty Cycle";
+}
+
+//! Show setting mode of current PWM channel (or all)
+void lcdShowMotorPWM() {
+  String pwmNames[] = { " No", " 80", "100", "200" };
+  lcd.setCursor(8, 0);
+  if(motor.currentMotor > 0)
+    lcd << "PWM" << pwmNames[motor.internalStatus[motor.currentMotor - 1].channelPWM];
+  else
+    lcd << "PWM" << pwmNames[motor.internalStatus[0].channelPWM];
 }
 
 //! Show the manual duty cycle setting
 void lcdShowDutyCycleManual() {
   lcd.setCursor(0, 1);
-  lcd << "set to manual";
+  lcd << "Duty Cic. manual";
 }
 
 //! Set duty cycle min value from analog input
 void lcdShowDutyCycleMin() {
   lcd.setCursor(0, 1);
-  lcd << "min value: ";
+  lcd << "DC min =";
   if(inputAnalogDC < 100)
     lcd.print(" ");
   lcd << inputAnalogDC;
@@ -500,7 +555,7 @@ void lcdShowDutyCycleMin() {
 //! Set duty cycle Max value from analog input
 void lcdShowDutyCycleMax() {
   lcd.setCursor(0, 1);
-  lcd << "Max value: ";
+  lcd << "DC Max =";
   if(inputAnalogDC < 100)
     lcd.print(" ");
   lcd << inputAnalogDC;
@@ -509,17 +564,28 @@ void lcdShowDutyCycleMax() {
 //! Show the default duty cycle automatic range
 void lcdShowDutyCycleAuto() {
   lcd.setCursor(0, 1);
-  lcd << "min " << DUTYCYCLE_MIN << " Max " << DUTYCYCLE_MAX;
+  lcd << "Duty Cyc. " << DUTYCYCLE_MIN << " - " << DUTYCYCLE_MAX;
 }
 
-//! Show the set PwM channel
-void lcdShowPWM() {
-  String pwmNames[] = { " No", " 80", "100", "200" };
-  lcd.setCursor(8, 0);
-  if(motor.currentMotor > 0)
-    lcd << "PWM" << pwmNames[motor.internalStatus[motor.currentMotor - 1].channelPWM];
-  else
-    lcd << "PWM" << pwmNames[motor.internalStatus[0].channelPWM];
+//! Show the duty cycle values for the selected PWM channel
+void showPWMInfo() {
+  String pwmNames[] = { "  80Hz", " 100Hz", " 200Hz" };
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd << "PWM[";
+  // Show the current motor settings
+  if(motor.currentPWM > 0) {
+    lcd << motor.currentPWM << "]" << pwmNames[motor.currentPWM - 1];
+    lcd.setCursor(0, 1);
+    lcd << "DutyCyc. " << motor.dutyCyclePWM[motor.currentPWM - 1].minDC << "-" << motor.dutyCyclePWM[motor.currentPWM - 1].maxDC;
+  }
+  else {
+      lcd << "*] None";
+      lcd.setCursor(0, 1);
+      lcd << "Select a PWM";
+  }
+  
 }
 
 //! Show the freewheeling mode

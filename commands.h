@@ -55,12 +55,13 @@
 #define AUTO_DC "dcauto"        ///< Set the duty cycle current limits
 #define MIN_DC "dcmin"          ///< Set the min duty cycle value via pot
 #define MAX_DC "dcmax"          ///< Set the max duty cycle value via pot
+#define INFO_DC "dcinfo"        ///< Set the current duty cycle values
 
 // PWM channel selection for duty cycle settings
-#define PWM80_dc "dc80"         ///< Set the duty cycle to the PWM channel 80Hz
-#define PWM100_dc "dc100"       ///< Set the duty cycle to the PWM channel 100Hz
-#define PWM200_dc "dc200"       ///< Set the duty cycle to the PWM channel 200Hz
-#define PWMALL_dc "dcPWM"       ///< Set the duty cycle to the all the PWM channels
+#define PWM80_DC "dc80"         ///< Set the duty cycle to the PWM channel 80Hz
+#define PWM100_DC "dc100"       ///< Set the duty cycle to the PWM channel 100Hz
+#define PWM200_DC "dc200"       ///< Set the duty cycle to the PWM channel 200Hz
+#define PWMALL_DC "dcPWM"       ///< Set the duty cycle to the all the PWM channels
 
 // Motor select flag for settings
 #define MOTOR_ALL "all"     ///< All motors selected and enabled
