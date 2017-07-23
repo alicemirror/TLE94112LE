@@ -77,7 +77,7 @@ through a USB-to-serial connection. The available commands are listed below:
 - __dc80__ : Set the duty cycle to the PWM channel 80Hz
 - __dc100__ : Set the duty cycle to the PWM channel 100Hz
 - __dc200__ : Set the duty cycle to the PWM channel 200Hz
-- __dcPWM__ : Set the duty cycle to the all the PWM channels
+- __dcPWM__ : Set the duty cycle to all the PWM channels
 
 ### Motor select for settings
 - __all__ : Select and enable all motors
@@ -114,10 +114,10 @@ through a USB-to-serial connection. The available commands are listed below:
 Below the defaault settings tables shown on the terminal after a _conf_ command
 call.
 
-### Motos settings
+### Motoes settings
 
-Motor|Enabled|Accel|Active FW|Dir|PWM
-|-----|-------|-----|---------|---|---|
+|Motor|Enabled|Accel|Active FW|Dir|PWM|
+|-----+-------+-----+---------+---+---|
 | M1  |   No  |  No |   Yes   | CW| No|
 | M2  |   No  |  No |   Yes   | CW| No|
 | M3  |   No  |  No |   Yes   | CW| No|
@@ -126,3 +126,10 @@ Motor|Enabled|Accel|Active FW|Dir|PWM
 | M6  |   No  |  No |   Yes   | CW| No|
 
 ### PWM settings
+
+|PWM Chan|DC Min|DC Max|DC Man|
+|--------+------+------+------|
+|  80 Hz |  50  | 255  |   No |
+| 100 Hz |  50  | 255  |   No |
+| 200 Hz |  50  | 255  |   No |
+
