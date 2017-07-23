@@ -128,7 +128,7 @@ Motor|Enabled|Accel|Active FW|Dir|PWM
 ### PWM settings
 
 PWM Chan|DC Min|DC Max|DC Man
-|--------+|------|------|------|
+|--------|------|------|------|
 |  80 Hz |  50  | 255  |   No |
 | 100 Hz |  50  | 255  |   No |
 | 200 Hz |  50  | 255  |   No |
