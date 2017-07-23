@@ -26,10 +26,17 @@ struct motorStatus {
   boolean isEnabled;      ///< Motor enabled status
   boolean isRunning;      ///< Motor running status (should be enabled)
   boolean freeWheeling;   ///< Free wheeling active or passive
+  int motorDirection;     ///< Current motor direction
+};
+
+/**
+ * PWM duty cycle settings. All motors using the same
+ * PWM channel will be affected by the same settings
+ */
+struct pwmStatus {
   uint8_t minDC;          ///< Min duty cycle value
   uint8_t maxDC;          ///< Max duty cycle value
   boolean manDC;          ///< Manual duty cycle flag
-  int motorDirection;     ///< Current motor direction
 };
 
 /**
@@ -38,8 +45,15 @@ struct motorStatus {
  */
 class MotorControl {
   public:
+
+    //! Current motor in use (setting parameters)
+    int currentMotor;
+    //! Current PWM channel (setting parameters)
+    int currentPWM;
     //! Status of the motors parameters and settings
     motorStatus internalStatus[MAX_MOTORS];
+    //! Status of the PWM duty cycle
+    pwmStatus dutyCyclePWM[AVAIL_PWM_CHANNELS];
 
     /** 
      * \brief Initialization and motor settings 
@@ -65,9 +79,6 @@ class MotorControl {
      * Reset all the half bridges immediately stopping the motors
      */
     void resetHB(void);
-
-    //! Current motor in use (setting parameters)
-    int currentMotor;
 
     /**
      * \brief Set the desired PWM channel to the current motor if one
@@ -100,21 +111,38 @@ class MotorControl {
     void setMotorFreeWheeling(boolean fw);
 
     /**
-     * \brief Set the state flag for duty cycle mode. If set to manual
-     * the target value (max) is read from the analog input (pot) else it
-     * is set following the internal parameters values
+     * \brief Set the state flag for duty cycle mode. 
+     * 
+     * If set to manual the target value (max) is read 
+     * from the analog input (pot) else it
+     * is set following the internal parameters values.
+     * This method applies to any iof the three available
+     * PWM channels
+     * 
+     * \param dc true = manual duty cycle while runnning, 
+     * false = use the preset values
      */
-    void setMotorManualDC(boolean dc);
+    void setPWMManualDC(boolean dc);
 
     /**
      * \brief Assign a user defined value as min duty cycle
+     * 
+     * This method applies to any of the three available
+     * PWM channels
+     * 
+     * \param dc Duty cycle minimum value for the selected PWM channel
      */
-    void setMotorMinDC(uint8_t dc);
+    void setPWMMinDC(uint8_t dc);
 
     /**
      * \brief Assign a user defined value as Max duty cycle
+     * 
+     * This method applies to any of the three available
+     * PWM channels
+     * 
+     * \param dc Duty cycle maximum value for the selected PWM channel
      */
-    void setMotorMaxDC(uint8_t dc);
+    void setPWMMaxDC(uint8_t dc);
 
     /**
      * \brief Accelerates to the regime speed then 
@@ -190,7 +218,8 @@ class MotorControl {
     void motorConfigHBCCW(int motor);
 
     /** 
-     * \brief Show Current motors configuration in a table on the serial terminal
+     * \brief Show Current motors configuration in a table and the PWM settings on
+     * another to the serial terminal
      */
      void showInfo(void);
 

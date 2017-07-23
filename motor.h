@@ -14,7 +14,7 @@
 #define _MOTOR
 
 //! Application title shown on startup
-#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.11"
+#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.12"
 
 //! For high current coupling half bridges together 1&2, 3&4
 #undef _HIGHCURRENT
@@ -47,6 +47,8 @@
 
 #define DUTYCYCLE_MIN 50    ///< Minimum duty cycle for motor start. Depends on motor characteristics
 #define DUTYCYCLE_MAX 255   ///< Maximum duty cycle
+
+#define AVAIL_PWM_CHANNELS 3 ///< Number of available PWM channels (excluding the NOPWM mode)
 
 /**
  * When _HIGHCURRENT is set every motor needs 2+2 half bridges to double the needed power
@@ -90,14 +92,17 @@
 //        Configuration info constants
 // ======================================================================
 
-#define INFO_MAIN_HEADER "*********************************************************"
-#define INFO_TITLE "                TLE94112LE Motors Configuration"
-#define INfO_TAB_HEADER1 "__________________________________________________________"
-#define INfO_TAB_HEADER2 "Motor|Enabled|Accel|Active FW|DC Min|DC Max|DC Man|Dir|PWM"
-#define INfO_TAB_HEADER3 "-----+-------+-----+---------+------+------+------+---+---"
+#define INFO_MAIN_HEADER1 "***************************************"
+#define INFO_MAIN_HEADER2 "*******************************"
+#define INFO_MOTORS_TITLE "        Motors configuration"
+#define INFO_PWM_TITLE   "   PWM Channels settings"
+#define INfO_TAB_HEADER1 "|Motor|Enabled|Accel|Active FW|Dir|PWM|"
+#define INfO_TAB_HEADER2 "|-----+-------+-----+---------+---+---|"
+#define INfO_TAB_HEADER3 "|PWM Chan|DC Min|DC Max|DC Man|"
+#define INfO_TAB_HEADER4 "|--------+------+------+------|"
 
 // Motor num
-#define INFO_FIELD1A " M"
+#define INFO_FIELD1A "| M"
 #define INFO_FIELD1B "  |"
 
 #define INFO_FIELD2Y "  Yes  |"
@@ -118,9 +123,13 @@
 #define INFO_FIELD8A " CW|"
 #define INFO_FIELD8B "CCW|"
 
-#define INFO_FIELD9_NO " No"
-#define INFO_FIELD9_80 " 80"
-#define INFO_FIELD9_100 "100"
-#define INFO_FIELD9_200 "200"
+#define INFO_FIELD9_NO " No|"
+#define INFO_FIELD9_80 " 80|"
+#define INFO_FIELD9_100 "100|"
+#define INFO_FIELD9_200 "200|"
+
+#define INFO_FIELD10_80 "|  80 Hz |"
+#define INFO_FIELD10_100 "| 100 Hz |"
+#define INFO_FIELD10_200 "| 200 Hz |"
 
 #endif

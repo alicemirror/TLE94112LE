@@ -134,14 +134,14 @@ void loop() {
       switch(analogDutyCycle) {
         case ANALOG_DCMIN:
           // Update the motor setting and display
-          motor.setMotorMinDC(inputAnalogDC);
+          motor.setPWMMinDC(inputAnalogDC);
           lcdShowDutyCycleMin();
          break;
         case ANALOG_DCMAX:
           // Update the motor setting and display
           // Map the analog reading value to the high side of the motor dc
           // range as the analog reading max value is smaller.
-          motor.setMotorMaxDC(inputAnalogDC);
+          motor.setPWMMaxDC(inputAnalogDC);
           lcdShowDutyCycleMax();
          break;
         case ANALOG_DCMAN:
@@ -372,27 +372,27 @@ void serialMessage(String title, String description) {
   // Duty cycle settings
   // =========================================================
   else if(commandString.equals(MANUAL_DC)) {
-    motor.setMotorManualDC(MOTOR_MANUAL_DC);
+    motor.setPWMManualDC(MOTOR_MANUAL_DC);
     showDutyCycle();
     lcdShowDutyCycleManual();
     serialMessage(CMD_MODE, commandString);
   }
   else if(commandString.equals(AUTO_DC)) {
-    motor.setMotorManualDC(MOTOR_AUTO_DC);
+    motor.setPWMManualDC(MOTOR_AUTO_DC);
     showDutyCycle();
     lcdShowDutyCycleAuto();
     serialMessage(CMD_MODE, commandString);
   }
   else if(commandString.equals(MIN_DC)) {
     analogDutyCycle = ANALOG_DCMIN;
-    motor.setMotorMinDC(inputAnalogDC);
+    motor.setPWMMinDC(inputAnalogDC);
     showDutyCycle();
     lcdShowDutyCycleMin();
     serialMessage(CMD_MODE, commandString);
   }
   else if(commandString.equals(MAX_DC)) {
     analogDutyCycle = ANALOG_DCMAX;
-    motor.setMotorMaxDC(inputAnalogDC);
+    motor.setPWMMaxDC(inputAnalogDC);
     showDutyCycle();
     lcdShowDutyCycleMax();
     serialMessage(CMD_MODE, commandString);
@@ -461,28 +461,23 @@ void lcdShowMotor() {
   }
 
   // Show duty cycle if a motor is selected
-    lcd.setCursor(4, 1);
-  if(motor.currentMotor > 0)
-    lcd << "(" << motor.internalStatus[motor.currentMotor - 1].minDC << "-" << motor.internalStatus[motor.currentMotor - 1].maxDC << ")";
+//    lcd.setCursor(4, 1);
+//  if(motor.currentMotor > 0)
+//    lcd << "(" << motor.internalStatus[motor.currentMotor - 1].minDC << "-" << motor.internalStatus[motor.currentMotor - 1].maxDC << ")";
 }
 
 //! Show duty cycle settings header
 void showDutyCycle() {
+  String pwmChannels[] = { " 80Hz", "100Hz", "200Hz" };
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd << "M";
+  lcd << "PWM ";
   // Show the current motor settings
-  if(motor.currentMotor > 0) {
-    lcd << motor.currentMotor;    // A motor is selected
-    
-    // Check if motor is enabled
-    if(motor.internalStatus[motor.currentMotor - 1].isEnabled)
-      lcd << "e"; // motor is enabled
-    else
-      lcd << "d"; // Motor is disabled
+  if(motor.currentPWM > 0) {
+    lcd << pwmChannels[motor.currentPWM - 1];    // A PWM Channel is selected
   }
   else {
-    lcd << "*e";   // Undetermined
+    lcd << " all channels";   // Undetermined
   }
   lcd << " Duty Cycle";
 }

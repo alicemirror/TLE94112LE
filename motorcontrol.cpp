@@ -25,22 +25,23 @@ void MotorControl::end(void) {
 void MotorControl::reset() {
   int j;
 
-  // Loop on all the available motors
   for(j = 0; j < MAX_MOTORS; j++) {
     internalStatus[j].useRamp = false;      // No acceleration
     internalStatus[j].channelPWM = tle94112.TLE_NOPWM; // PWM disabled on start
     internalStatus[j].isEnabled = false;    // Motors initially disabled
     internalStatus[j].isRunning = false;    // Not running (should be enabled)
     internalStatus[j].freeWheeling = true;  // Free wheeling active
-    internalStatus[j].minDC = DUTYCYCLE_MIN;  // Min duty cycle
-    internalStatus[j].maxDC = DUTYCYCLE_MAX;  // Max duty cycle
-    internalStatus[j].manDC = false;          // Duty cycle in auto mode
     internalStatus[j].motorDirection = MOTOR_DIRECTION_CW;
-    // Configure the half bridges in no active state
   } // loop on the motors array
 
+  for(j = 0; j < AVAIL_PWM_CHANNELS; j++) {
+    dutyCyclePWM[j].minDC = DUTYCYCLE_MIN;  // Min duty cycle
+    dutyCyclePWM[j].maxDC = DUTYCYCLE_MAX;  // Max duty cycle
+    dutyCyclePWM[j].manDC = false;          // Duty cycle in auto mode
+  } // loop on the PWM channels array
+
   resetHB();
-  
+  currentPWM = 0; // No PWM channels selected
   currentMotor = 0; // No motors selected
 }
 
@@ -112,41 +113,41 @@ void MotorControl::setMotorFreeWheeling(boolean fw) {
   }
 }
 
-void MotorControl::setMotorManualDC(boolean dc) {
-  if(currentMotor != 0) {
-    // We are setting a specific mmotor
-    internalStatus[currentMotor - 1].manDC = dc;
+void MotorControl::setPWMManualDC(boolean dc) {
+  if(currentPWM != 0) {
+    // We are setting a specific PWM channel
+    dutyCyclePWM[currentPWM - 1].manDC = dc;
   }
   else {
     int j;
-    for (j = 0; j < MAX_MOTORS; j++) {
-      internalStatus[j].manDC = dc;
+    for (j = 0; j < AVAIL_PWM_CHANNELS; j++) {
+      dutyCyclePWM[j].manDC = dc;
     }
   }
 }
 
-void MotorControl::setMotorMinDC(uint8_t dc) {
-  if(currentMotor != 0) {
-    // We are setting a specific mmotor
-    internalStatus[currentMotor - 1].minDC = dc;
+void MotorControl::setPWMMinDC(uint8_t dc) {
+  if(currentPWM != 0) {
+    // We are setting a specific PWM channel
+    dutyCyclePWM[currentPWM - 1].minDC = dc;
   }
   else {
     int j;
-    for (j = 0; j < MAX_MOTORS; j++) {
-      internalStatus[j].minDC = dc;
+    for (j = 0; j < AVAIL_PWM_CHANNELS; j++) {
+      dutyCyclePWM[j].minDC = dc;
     }
   }
 }
 
-void MotorControl::setMotorMaxDC(uint8_t dc) {
-  if(currentMotor != 0) {
-    // We are setting a specific mmotor
-    internalStatus[currentMotor - 1].maxDC = dc;
+void MotorControl::setPWMMaxDC(uint8_t dc) {
+  if(currentPWM != 0) {
+    // We are setting a specific PWM channel
+    dutyCyclePWM[currentPWM - 1].maxDC = dc;
   }
   else {
     int j;
-    for (j = 0; j < MAX_MOTORS; j++) {
-      internalStatus[j].maxDC = dc;
+    for (j = 0; j < AVAIL_PWM_CHANNELS; j++) {
+      dutyCyclePWM[j].maxDC = dc;
     }
   }
 }
@@ -714,10 +715,10 @@ boolean MotorControl:: tleCheckDiagnostic(void) {
 
 void MotorControl::showInfo(void) {
   int j;
-  // Table header
-  Serial << INFO_MAIN_HEADER << endl << INFO_TITLE << endl << INFO_MAIN_HEADER << endl;
-  Serial << INfO_TAB_HEADER1 << endl << INfO_TAB_HEADER2 << endl << INfO_TAB_HEADER3 << endl;
-  // Build the table data
+  // Motor table header
+  Serial << INFO_MAIN_HEADER1 << endl << INFO_MOTORS_TITLE << endl << INFO_MAIN_HEADER1 << endl;
+  Serial << INfO_TAB_HEADER2 << endl << INfO_TAB_HEADER1 << endl << INfO_TAB_HEADER2 << endl;
+  // Build the motors settings table data
   for (j = 0; j < MAX_MOTORS; j++) {
     // #1 - Motor
     Serial << INFO_FIELD1A << (j + 1) << INFO_FIELD1B;
@@ -736,21 +737,6 @@ void MotorControl::showInfo(void) {
       Serial << INFO_FIELD4Y;
     else
       Serial << INFO_FIELD4N;
-    // #5 - DC Min
-    Serial << INFO_FIELD5_6A;
-    if(internalStatus[j].minDC < 100)
-      Serial << " ";
-    Serial << internalStatus[j].minDC << INFO_FIELD5_6B;
-    // #6 - DC Max
-    Serial << INFO_FIELD5_6A;
-    if(internalStatus[j].maxDC < 100)
-      Serial << " ";
-    Serial << internalStatus[j].maxDC << INFO_FIELD5_6B;
-    // #7 - Manual DC
-    if(internalStatus[j].manDC)
-      Serial << INFO_FIELD7Y;
-    else
-      Serial << INFO_FIELD7N;
     // #8 - Direction
     if(internalStatus[j].motorDirection == MOTOR_DIRECTION_CW)
       Serial << INFO_FIELD8A;
@@ -771,7 +757,42 @@ void MotorControl::showInfo(void) {
         Serial << INFO_FIELD9_200;
       break;
     }
-    Serial << endl << INfO_TAB_HEADER3 << endl;
+    Serial << endl << INfO_TAB_HEADER2 << endl;
+  }
+
+  // PWM table header
+  Serial << endl << INFO_MAIN_HEADER2 << endl << INFO_PWM_TITLE << endl << INFO_MAIN_HEADER2 << endl;
+  Serial << INfO_TAB_HEADER4 << endl << INfO_TAB_HEADER3 << endl << INfO_TAB_HEADER4 << endl;
+  // Build the pwm settings table data
+  for (j = 0; j < AVAIL_PWM_CHANNELS; j++) {
+    // #1 - PWM
+    switch(j) {
+      case 0:
+        Serial << INFO_FIELD10_80;
+      break;
+      case 1:
+        Serial << INFO_FIELD10_100;
+      break;
+      case 2:
+        Serial << INFO_FIELD10_200;
+      break;
+    }
+    // #2 - DC Min
+    Serial << INFO_FIELD5_6A;
+    if(dutyCyclePWM[j].minDC < 100)
+      Serial << " ";
+    Serial << dutyCyclePWM[j].minDC << INFO_FIELD5_6B;
+    // #3 - DC Max
+    Serial << INFO_FIELD5_6A;
+    if(dutyCyclePWM[j].maxDC < 100)
+      Serial << " ";
+    Serial << dutyCyclePWM[j].maxDC << INFO_FIELD5_6B;
+    // #4 - Manual DC
+    if(dutyCyclePWM[j].manDC)
+      Serial << INFO_FIELD7Y;
+    else
+      Serial << INFO_FIELD7N;
+    Serial << endl << INfO_TAB_HEADER4 << endl;
   }
 }
 
