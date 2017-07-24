@@ -200,11 +200,112 @@ void MotorControl::startMotors(void) {
 }
 
 void MotorControl::stopMotors(void) {
+  motorPWMStop();
   motorStopHB();
 }
 
 void MotorControl::motorPWMStart(void) {
-  // First start the PWM 
+  int j;
+  
+  // Loop on the PWM channels
+  for (j = 0; j < AVAIL_PWM_CHANNELS; j++) {
+    if(dutyCyclePWM[j].useRamp) {
+      // Should manage acceleration
+      motorPWMAccelerate(j);
+    }
+    else
+      motorPWMRun(j);
+  }
+}
+
+void MotorControl::motorPWMStop(void) {
+  int j;
+  
+  // Loop on the PWM channels
+  for (j = 0; j < AVAIL_PWM_CHANNELS; j++) {
+    if(dutyCyclePWM[j].useRamp) {
+      // Should manage acceleration
+      motorPWMDecelerate(j);
+      motorPWMHalt(j);
+    }
+    else
+      motorPWMHalt(j);
+  }
+}
+
+void MotorControl::motorPWMAccelerate(int channel) {
+  int j;
+
+  for(j = dutyCyclePWM[channel].minDC; j < dutyCyclePWM[channel].maxDC; j++) {
+    switch(channel + 1){
+      case PWM80_CHID:
+        tle94112.configPWM(tle94112.TLE_PWM1, tle94112.TLE_FREQ80HZ, (uint8_t)j);
+      break;
+      case PWM100_CHID:
+        tle94112.configPWM(tle94112.TLE_PWM2, tle94112.TLE_FREQ100HZ, (uint8_t)j);
+      break;
+      case PWM200_CHID:
+        tle94112.configPWM(tle94112.TLE_PWM3, tle94112.TLE_FREQ200HZ, (uint8_t)j);
+      break;
+    }
+    //Check for error
+    if(tleCheckDiagnostic()) {
+      tleDiagnostic();
+    }
+    delay(RAMP_STEP_DELAY);
+  }
+}
+
+void MotorControl::motorPWMRun(int channel) {
+  switch(channel + 1){
+    case PWM80_CHID:
+      tle94112.configPWM(tle94112.TLE_PWM1, tle94112.TLE_FREQ80HZ, dutyCyclePWM[channel].maxDC);
+    break;
+    case PWM100_CHID:
+      tle94112.configPWM(tle94112.TLE_PWM2, tle94112.TLE_FREQ100HZ, dutyCyclePWM[channel].maxDC);
+    break;
+    case PWM200_CHID:
+      tle94112.configPWM(tle94112.TLE_PWM3, tle94112.TLE_FREQ200HZ, dutyCyclePWM[channel].maxDC);
+    break;
+  }
+}
+
+void MotorControl::motorPWMHalt(int channel) {
+  switch(channel + 1){
+    case PWM80_CHID:
+      tle94112.configPWM(tle94112.TLE_PWM1, tle94112.TLE_FREQ80HZ, (uint8_t)0);
+    break;
+    case PWM100_CHID:
+      tle94112.configPWM(tle94112.TLE_PWM2, tle94112.TLE_FREQ100HZ, (uint8_t)0);
+    break;
+    case PWM200_CHID:
+      tle94112.configPWM(tle94112.TLE_PWM3, tle94112.TLE_FREQ200HZ, (uint8_t)0);
+    break;
+  }
+}
+
+void MotorControl::motorPWMDecelerate(int channel) {
+  int j;
+  
+  for(j = dutyCyclePWM[channel].maxDC; j > dutyCyclePWM[channel].minDC; j--) {
+    // Update the speed
+    switch(channel + 1){
+      case PWM80_CHID:
+        tle94112.configPWM(tle94112.TLE_PWM1, tle94112.TLE_FREQ80HZ, (uint8_t)j);
+      break;
+      case PWM100_CHID:
+        tle94112.configPWM(tle94112.TLE_PWM2, tle94112.TLE_FREQ100HZ, (uint8_t)j);
+      break;
+      case PWM200_CHID:
+        tle94112.configPWM(tle94112.TLE_PWM3, tle94112.TLE_FREQ200HZ, (uint8_t)j);
+      break;
+    }
+    //Check for error
+    if(tleCheckDiagnostic()) {
+      tleDiagnostic();
+    }
+    delay(RAMP_STEP_DELAY);
+  }
 }
 
 // ===============================================================
@@ -215,8 +316,6 @@ void MotorControl::motorConfigHB(void) {
   int j;
     for(j = 0; j < MAX_MOTORS; j++) {
       motorConfigHB(j);
-      if(tleCheckDiagnostic())
-        tleDiagnostic(j, TLE_MOTOR_STARTING);
     }
 }
 
@@ -226,16 +325,20 @@ void MotorControl::motorConfigHB(int motor) {
       motorConfigHBCW(motor);
     else
       motorConfigHBCCW(motor);
+
+    if(tleCheckDiagnostic())
+      tleDiagnostic(motor, TLE_MOTOR_STARTING);
   }
 }
 
 void MotorControl::motorStopHB(void) {
   int j;
     for(j = 0; j < MAX_MOTORS; j++) {
-      if(internalStatus[j].isRunning)
+      if(internalStatus[j].isRunning) {
         motorStopHB(j);
         if(tleCheckDiagnostic())
           tleDiagnostic(j, TLE_MOTOR_STOPPING);
+      }
     }
 }
 
@@ -738,29 +841,34 @@ void MotorControl::tleDiagnostic() {
     Serial << TLE_NOERROR << endl;
   } // No errors
   else {
-    // Check for all error conditions
-    Serial << TLE_ERROR_MSG << endl;
     #ifndef _IGNORE_OPENLOAD
-    if(tle94112.getSysDiagnosis(tle94112.TLE_LOAD_ERROR)) {
+    if(tle94112.getSysDiagnosis(tle94112.TLE_LOAD_ERROR) != 0) {
+      Serial << TLE_ERROR_MSG << endl;
       Serial << TLE_LOADERROR << endl;
     } // Open load error
     #endif
-    if(tle94112.getSysDiagnosis(tle94112.TLE_SPI_ERROR)) {
+    if(tle94112.getSysDiagnosis(tle94112.TLE_SPI_ERROR) != 0) {
+      Serial << TLE_ERROR_MSG << endl;
       Serial << TLE_SPIERROR << endl;
     }
-    if(tle94112.getSysDiagnosis(tle94112.TLE_UNDER_VOLTAGE)) {
+    if(tle94112.getSysDiagnosis(tle94112.TLE_UNDER_VOLTAGE) != 0) {
+      Serial << TLE_ERROR_MSG << endl;
       Serial << TLE_UNDERVOLTAGE << endl;
     }
-    if(tle94112.getSysDiagnosis(tle94112.TLE_OVER_VOLTAGE)) {
+    if(tle94112.getSysDiagnosis(tle94112.TLE_OVER_VOLTAGE) != 0) {
+      Serial << TLE_ERROR_MSG << endl;
       Serial <<TLE_OVERVOLTAGE << endl;
     }
-    if(tle94112.getSysDiagnosis(tle94112.TLE_POWER_ON_RESET)) {
+    if(tle94112.getSysDiagnosis(tle94112.TLE_POWER_ON_RESET) != 0) {
+      Serial << TLE_ERROR_MSG << endl;
       Serial << TLE_POWERONRESET << endl;
     }
-    if(tle94112.getSysDiagnosis(tle94112.TLE_TEMP_SHUTDOWN)) {
+    if(tle94112.getSysDiagnosis(tle94112.TLE_TEMP_SHUTDOWN) != 0) {
+      Serial << TLE_ERROR_MSG << endl;
       Serial << TLE_TEMPSHUTDOWN << endl;
     }
-    if(tle94112.getSysDiagnosis(tle94112.TLE_TEMP_WARNING)) {
+    if(tle94112.getSysDiagnosis(tle94112.TLE_TEMP_WARNING) != 0) {
+      Serial << TLE_ERROR_MSG << endl;
       Serial << TLE_TEMPWARNING;
     }
     // Clear all possible error conditions        

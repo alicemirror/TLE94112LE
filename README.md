@@ -4,7 +4,7 @@
 ![Workbench platform](images/IMG_20170722_080932.jpg)
 
 ## Design note
-This if the software application created with the Arduino IDE 1.8.3 to run the
+This is the software application created with the Arduino IDE 1.8.3 to run the
 test platform.
 
 This application is specific for the hardware building but can be easily modified
@@ -40,7 +40,14 @@ compatible board.
 
 ## Commands
 Excluding the potentiometer on the board all the controls are sent via terminal 
-through a USB-to-serial connection. The available commands are listed below:
+through a USB-to-serial connection. When the system is in _running_ mode it
+can accept configuration commands that will be effective after a _stop_ and
+_start_ call.
+
+If errors occur while the system is running these are shown in detail on the
+serial terminal and are notified on the LCD screen
+
+The available commands are listed below:
 
 ### Direction control
 - __cw__ : clockwise rotation
@@ -48,24 +55,10 @@ through a USB-to-serial connection. The available commands are listed below:
 - __accel__ : Enable the acceleration when motor start
 - __noaccel__ : Disable the acceleration when motor start
 
-### Global action commands
+### Action commands
 - __start__ : start all motors
 - __stop__ : stop all motors
 - __reset__ : reset the system to the default
-
-### Single motor action commands
-- __m1on__ : start motor 1
-- __m2on__ : start motor 2
-- __m3on__ : start motor 3
-- __m4on__ : start motor 4
-- __m5on__ : start motor 5
-- __m6on__ : start motor 6
-- __m1off__ : stop motor 1 
-- __m2off__ : stop motor 2
-- __m3off__ : stop motor 3
-- __m4off__ : stop motor 4 
-- __m5off__ : stop motor 5
-- __m6off__ : stop motor 6
 
 ### Duty cycle settings to PWM channels
 - __dcmanual__ : Set the duty cycle value depending on the pot
@@ -82,7 +75,7 @@ through a USB-to-serial connection. The available commands are listed below:
 
 ### Motor select for settings
 - __all__ : Select and enable all motors
-- __none__ : Disble all motors and deselect
+- __none__ : Disble all motors
 - __m1__ : select motor 1
 - __m2__ : select motor 2
 - __m3__ : select motor 3
@@ -97,6 +90,8 @@ through a USB-to-serial connection. The available commands are listed below:
 - __m4+__ : enable motor 4
 - __m5+__ : enable motor 5
 - __m6+__ : enable motor 6
+
+_Enabling motors does not change their status nor the enabling_
 
 ### PWM Frequency selector (assign PWM channels to motors)
 - __noPWM__ : No PWM

@@ -14,14 +14,14 @@
 #define _MOTOR
 
 //! Application title shown on startup and after reset
-#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.16"
+#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.17"
 
 #undef _HIGHCURRENT
 #undef _MOTORDEBUG
 
 //! Avoid too many openload error messages when starting acceleration
 //! by default it is ignored
-#undef _IGNORE_OPENLOAD
+#define _IGNORE_OPENLOAD
 
 #define INVERT_DIRECTION_DELAY 300  ///< Delay in ms when the motor should invert direction
 #define ACCELERATION_DELAY 5        ///< Delay between acceleration steps
@@ -44,13 +44,14 @@
 #define MOTOR_PWM_ON 1  ///< Motor run with PWM
 #define MOTOR_PWM_OFF 0 ///< Motor runs without PWM
 
-#define DUTYCYCLE_MIN 50    ///< Minimum duty cycle for motor start. Depends on motor characteristics
+#define DUTYCYCLE_MIN 0     ///< Minimum duty cycle for motor start. Depends on motor characteristics
 #define DUTYCYCLE_MAX 255   ///< Maximum duty cycle
+#define RAMP_STEP_DELAY 5   ///< Delay (ms) between steps during an acceleration/deceleration cycle
 
-#define AVAIL_PWM_CHANNELS 3 ///< Number of available PWM channels (excluding the NOPWM mode)
-#define PWM80_CHID 1      ///< ID for PWM channel 80 Hz
-#define PWM100_CHID 2     ///< ID for PWM channel 100 Hz
-#define PWM200_CHID 3    ///< ID for PWM channel 200 Hz
+#define AVAIL_PWM_CHANNELS 3  ///< Number of available PWM channels (excluding the NOPWM mode)
+#define PWM80_CHID 1          ///< ID for PWM channel 80 Hz
+#define PWM100_CHID 2         ///< ID for PWM channel 100 Hz
+#define PWM200_CHID 3         ///< ID for PWM channel 200 Hz
 
 /**
  * When _HIGHCURRENT is set every motor needs 2+2 half bridges to double the needed power

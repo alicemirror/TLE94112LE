@@ -16,7 +16,6 @@
 #include <TLE94112.h>
 #include "motor.h"
 
-
 /**
  * All the state flas and value settings for a generic motor
  */
@@ -117,7 +116,7 @@ class MotorControl {
     void setMotorDirection(int dir);
 
     /**
-     * Enable or disable the acceleration/deceleration sequence
+     * \brief Enable or disable the acceleration/deceleration sequence
      * for the desired PWM channel
      * 
      * \param acc Acceleration flag
@@ -125,9 +124,42 @@ class MotorControl {
     void setPWMRamp(boolean acc);
 
     /**
-     * Start PWM channels with acceleraton (if set)
+     * \brief Start PWM channels
      */
     void motorPWMStart(void);
+
+    /**
+     * \brief Start PWM channels
+     */
+    void motorPWMStop(void);
+    
+    /**
+     * \brief Run PWM channels with an acceleration cycle
+     * 
+     * \param channel the selectedPWM channel
+     */
+    void motorPWMAccelerate(int channel);
+    
+    /**
+     * \brief Helt PWM channels with a deceleration cycle
+     * 
+     * \param channel the selectedPWM channel
+     */
+    void motorPWMDecelerate(int channel);
+    
+    /**
+     * \bruief Run PWM channel immediately setting the max duty cycle
+     * 
+     * \param channel the selectedPWM channel
+     */
+    void motorPWMRun(int channel);
+
+    /**
+     * \brief Halt PWM channel immediately setting the duty cycle to 0
+     * 
+     * \param channel the selectedPWM channel
+     */
+    void motorPWMHalt(int channel);
     
     /**
      * Enable or disable the freewheeling flag

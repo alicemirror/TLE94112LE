@@ -23,7 +23,7 @@ MotorControl motor;
 #define ANALOG_DCPIN A0
 
 //! Max analog reading range with a 50K potentiometer
-#define MAX_ANALOG_RANGE 255
+#define MAX_ANALOG_RANGE 1024
 //! Min analog reading range with a 50K potentiometer
 #define MIN_ANALOG_RANGE 0
 
@@ -403,6 +403,9 @@ void serialMessage(String title, String description) {
   // =========================================================
   else if(commandString.equals(MANUAL_DC)) {
     motor.setPWMManualDC(MOTOR_MANUAL_DC);
+    // Initialize the max duty cycle to the last analog read
+    // by default
+    motor.setPWMMaxDC(inputAnalogDC);
     showPWMSetting();
     lcdShowDutyCycleManual();
     serialMessage(CMD_MODE, commandString);

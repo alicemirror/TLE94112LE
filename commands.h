@@ -29,24 +29,10 @@
 #define DIRECTION_CW "cw"     ///< clockwise rotation
 #define DIRECTION_CCW "ccw"   ///< counterclockwise rotation
 
-// Global action commands
+// Action commands
 #define MOTOR_START "start"   ///< stop all
 #define MOTOR_STOP "stop"     ///< stop all
 #define MOTOR_RESET "reset"   ///< reset the system to the default
-
-// Single motor action commands
-#define M1_START "m1on"       ///< start motor 1
-#define M1_START "m2on"       ///< start motor 2
-#define M1_START "m3on"       ///< start motor 3
-#define M1_START "m4on"       ///< start motor 4
-#define M1_START "m5on"       ///< start motor 5
-#define M1_START "m6on"       ///< start motor 6
-#define M1_STOP "m1off"       ///< stop motor 1 
-#define M1_STOP "m2off"       ///< stop motor 2
-#define M1_STOP "m3off"       ///< stop motor 3
-#define M1_STOP "m4off"       ///< stop motor 4 
-#define M1_STOP "m5off"       ///< stop motor 5
-#define M1_STOP "m6off"       ///< stop motor 6
 
 // Duty cycle settings to PWM channels
 #define MANUAL_DC "dcmanual"    ///< Set the duty cycle value depending on the pot
