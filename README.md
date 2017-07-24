@@ -117,20 +117,20 @@ after a _conf_ command call.
 
 ### Motors settings
 
-Motor|Enabled|Accel|Active FW|Dir|PWM
-|-----|-------|-----|---------|---|---|
-| M1  |   No  |  No |   Yes   | CW| No|
-| M2  |   No  |  No |   Yes   | CW| No|
-| M3  |   No  |  No |   Yes   | CW| No|
-| M4  |   No  |  No |   Yes   | CW| No|
-| M5  |   No  |  No |   Yes   | CW| No|
-| M6  |   No  |  No |   Yes   | CW| No|
+Motor|Enabled||Active FW|Dir|PWM
+|-----|-------|---------|---|---|
+| M1  |   No  |   Yes   | CW| No|
+| M2  |   No  |   Yes   | CW| No|
+| M3  |   No  |   Yes   | CW| No|
+| M4  |   No  |   Yes   | CW| No|
+| M5  |   No  |   Yes   | CW| No|
+| M6  |   No  |   Yes   | CW| No|
 
 ### PWM settings
 
-PWM Chan|DC Min|DC Max|DC Man
-|--------|------|------|------|
-|  80 Hz |  50  | 255  |   No |
-| 100 Hz |  50  | 255  |   No |
-| 200 Hz |  50  | 255  |   No |
+PWM Chan|DC Min|DC Max|DC Man|Accel
+|--------|------|------|------|----
+|  80 Hz |  50  | 255  |   No | No |
+| 100 Hz |  50  | 255  |   No | No |
+| 200 Hz |  50  | 255  |   No | No |
 

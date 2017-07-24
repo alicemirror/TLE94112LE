@@ -28,8 +28,6 @@
 // Direction control
 #define DIRECTION_CW "cw"     ///< clockwise rotation
 #define DIRECTION_CCW "ccw"   ///< counterclockwise rotation
-#define MOTOR_RAMP "accel"  ///< Enable the acceleration when motor start
-#define MOTOR_NORAMP "noaccel"  ///< Disable the acceleration when motor start
 
 // Global action commands
 #define MOTOR_START "start"   ///< stop all
@@ -62,6 +60,8 @@
 #define PWM100_DC "dc100"       ///< Set the duty cycle to the PWM channel 100Hz
 #define PWM200_DC "dc200"       ///< Set the duty cycle to the PWM channel 200Hz
 #define PWMALL_DC "dcPWM"       ///< Set the duty cycle to the all the PWM channels
+#define PWM_RAMP "accel"        ///< Enable the acceleration
+#define PWM_NORAMP "noaccel"    ///< Disable the acceleration
 
 // Motor select flag for settings
 #define MOTOR_ALL "all"     ///< All motors selected and enabled

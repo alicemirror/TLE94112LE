@@ -14,7 +14,7 @@
 #define _MOTOR
 
 //! Application title shown on startup and after reset
-#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.14"
+#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.15"
 
 #undef _HIGHCURRENT
 #undef _MOTORDEBUG
@@ -102,14 +102,14 @@
 //        Configuration info constants
 // ======================================================================
 
-#define INFO_MAIN_HEADER1 "***************************************"
-#define INFO_MAIN_HEADER2 "*******************************"
-#define INFO_MOTORS_TITLE "        Motors configuration"
-#define INFO_PWM_TITLE   "   PWM Channels settings"
-#define INfO_TAB_HEADER1 "|Motor|Enabled|Accel|Active FW|Dir|PWM|"
-#define INfO_TAB_HEADER2 "|-----+-------+-----+---------+---+---|"
-#define INfO_TAB_HEADER3 "|PWM Chan|DC Min|DC Max|DC Man|"
-#define INfO_TAB_HEADER4 "|--------+------+------+------|"
+#define INFO_MAIN_HEADER1     "*********************************"
+#define INFO_MAIN_HEADER2     "*************************************"
+#define INFO_MOTORS_TITLE     "      Motors configuration"
+#define INFO_PWM_TITLE        "       PWM Channels settings"
+#define INfO_TAB_HEADER1      "|Motor|Enabled|Active FW|Dir|PWM|"
+#define INfO_TAB_HEADER2      "|-----+-------+---------+---+---|"
+#define INfO_TAB_HEADER3      "|PWM Chan|DC Min|DC Max|DC Man|Accel|"
+#define INfO_TAB_HEADER4      "|--------+------+------+------+-----|"
 
 // Motor num
 #define INFO_FIELD1A "| M"

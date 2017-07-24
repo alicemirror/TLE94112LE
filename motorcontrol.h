@@ -21,7 +21,6 @@
  * All the state flas and value settings for a generic motor
  */
 struct motorStatus {
-  boolean useRamp;        ///< Use acceleration/deceleration cycle when starting
   uint8_t channelPWM;     ///< PWM channel for this motor
   boolean isEnabled;      ///< Motor enabled status
   boolean isRunning;      ///< Motor running status (should be enabled)
@@ -34,6 +33,7 @@ struct motorStatus {
  * PWM channel will be affected by the same settings
  */
 struct pwmStatus {
+  boolean useRamp;        ///< Use acceleration/deceleration cycle when starting
   uint8_t minDC;          ///< Min duty cycle value
   uint8_t maxDC;          ///< Max duty cycle value
   boolean manDC;          ///< Manual duty cycle flag
@@ -117,13 +117,18 @@ class MotorControl {
     void setMotorDirection(int dir);
 
     /**
-     * Enable or disable the acceleration/deceleration sequence when motor
-     * start or invert direction
+     * Enable or disable the acceleration/deceleration sequence
+     * for the desired PWM channel
      * 
      * \param acc Acceleration flag
      */
-    void setMotorRamp(boolean acc);
+    void setPWMRamp(boolean acc);
 
+    /**
+     * Start PWM channels with acceleraton (if set)
+     */
+    void motorPWMStart(void);
+    
     /**
      * Enable or disable the freewheeling flag
      * 

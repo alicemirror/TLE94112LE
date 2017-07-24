@@ -30,7 +30,6 @@ void MotorControl::reset() {
   int j;
 
   for(j = 0; j < MAX_MOTORS; j++) {
-    internalStatus[j].useRamp = false;      // No acceleration
     internalStatus[j].channelPWM = tle94112.TLE_NOPWM; // PWM disabled on start
     internalStatus[j].isEnabled = false;    // Motors initially disabled
     internalStatus[j].isRunning = false;    // Not running (should be enabled)
@@ -42,6 +41,7 @@ void MotorControl::reset() {
     dutyCyclePWM[j].minDC = DUTYCYCLE_MIN;  // Min duty cycle
     dutyCyclePWM[j].maxDC = DUTYCYCLE_MAX;  // Max duty cycle
     dutyCyclePWM[j].manDC = false;          // Duty cycle in auto mode
+    dutyCyclePWM[j].useRamp = false;        // No acceleration
   } // loop on the PWM channels array
 
   resetHB();
@@ -74,7 +74,7 @@ void MotorControl::resetPWM(void) {
 }
 
 // ===============================================================
-// Setting motor parameters methods
+// Setting motors configuration
 // ===============================================================
 
 void MotorControl::setPWM(uint8_t pwmCh) {
@@ -101,18 +101,6 @@ void MotorControl::setMotorDirection(int dir) {
   }
 }
 
-void MotorControl::setMotorRamp(boolean acc) {
-  if(currentMotor != 0) {
-    internalStatus[currentMotor - 1].useRamp = acc;
-  }
-  else {
-    int j;
-    for (j = 0; j < MAX_MOTORS; j++) {
-      internalStatus[j].useRamp = acc;
-    }
-  }
-}
-
 void MotorControl::setMotorFreeWheeling(boolean fw) {
   if(currentMotor != 0) {
     internalStatus[currentMotor - 1].freeWheeling = fw;
@@ -124,6 +112,10 @@ void MotorControl::setMotorFreeWheeling(boolean fw) {
     }
   }
 }
+
+// ===============================================================
+// Setting PWM methods
+// ===============================================================
 
 void MotorControl::setPWMManualDC(boolean dc) {
   if(currentPWM != 0) {
@@ -163,35 +155,17 @@ void MotorControl::setPWMMaxDC(uint8_t dc) {
   }
 }
 
-//void MotorControl::motorRun(int minDC, int maxDC, int accdelay, long duration, int motorDirection) {
-//  int j;
-//
-  // If the motor is already running it is stopped before starting again
-//  if(internalStatus.isRunning)
-//    motorBrake();
-  // Check for the direction
-//  if(motorDirection == DIRECTION_FEED) {
-//#ifdef _HIGHCURRENT
-//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-//    tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-//    tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-//#else
-//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-//#endif
-//  }
-//  else {
-//#ifdef _HIGHCURRENT
-//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-//    tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-//    tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-//#else
-//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-//#endif
-//  }
+void MotorControl::setPWMRamp(boolean acc) {
+  if(currentPWM != 0) {
+    dutyCyclePWM[currentPWM - 1].useRamp = acc;
+  }
+  else {
+    int j;
+    for (j = 0; j < AVAIL_PWM_CHANNELS; j++) {
+      dutyCyclePWM[j].useRamp = acc;
+    }
+  }
+}
 
   // Acceleration loop  
 //  for(j = minDC; j <= maxDC; j++) {
@@ -203,14 +177,6 @@ void MotorControl::setPWMMaxDC(uint8_t dc) {
 //  }
 //    delay(accdelay);
 //  }
-//
-//  // Wait for the requeste number of ms at the regime speed
-//  tle94112.configPWM(tle94112.TLE_PWM1, tle94112.TLE_FREQ200HZ, maxDC);
-//  //Check for error
-//  if(tleCheckDiagnostic()) {
-//    tleDiagnostic();
-//  }
-//  delay(duration);
 //
 //  // Deceleration loop  
 //  for(j = maxDC; j > minDC; j--) {
@@ -224,107 +190,20 @@ void MotorControl::setPWMMaxDC(uint8_t dc) {
 //  }
 //}
 
-//void MotorControl::motorStart(int minDC, int maxDC, int accdelay, int motorDirection) {
-//  int j;
-  // If the motor is already running it is stopped before starting again
-//  if(internalStatus.isRunning)
-//    motorBrake();
-//  // Set the motor status
-//  internalStatus.isRunning = true;
-//  internalStatus.minDC = minDC;
-//  internalStatus.maxDC = maxDC;
-//  internalStatus.accdelay = accdelay;
-//  internalStatus.motorDirection = motorDirection;
-
-  // Check for the direction
-//  if(motorDirection == DIRECTION_FEED) {
-//#ifdef _HIGHCURRENT
-//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-//    tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-//    tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-//#else
-//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-//#endif
-//  }
-//  else {
-//#ifdef _HIGHCURRENT
-//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-//    tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-//    tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-//#else
-//    tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_LOW, tle94112.TLE_NOPWM);
-//    tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_HIGH, tle94112.TLE_PWM1);
-//#endif
-//  }
-//
-//  // Acceleration loop  
-//  for(j = minDC; j <= maxDC; j++) {
-//    // Update the speed
-//    tle94112.configPWM(tle94112.TLE_PWM1, tle94112.TLE_FREQ200HZ, j);
-//    //Check for error
-//    if(tleCheckDiagnostic()) {
-//      tleDiagnostic();
-//    }
-//    delay(accdelay);
-//  }
-//  tle94112.configPWM(tle94112.TLE_PWM1, tle94112.TLE_FREQ200HZ, maxDC);
-//}
-
-//void MotorControl::motorBrake(void) {
-  // If motor is running then it decelerates before stop
-//  if(internalStatus.isRunning) {
-//    int j;
-//    // Deceleration loop  
-//    for(j = internalStatus.maxDC; j > internalStatus.minDC; j--) {
-//      // Update the speed
-//      tle94112.configPWM(tle94112.TLE_PWM1, tle94112.TLE_FREQ200HZ, j);
-//    //Check for error
-//    if(tleCheckDiagnostic()) {
-//      tleDiagnostic();
-//    }
-//      delay(internalStatus.accdelay);
-//    }
-//    // Update the motor status
-////    internalStatus.isRunning = false;
-//  }
-//#ifdef _HIGHCURRENT
-//  // High current configuration, uses HB1&2 + 3&4
-//  tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_NOPWM);
-//  tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_HIGH, tle94112.TLE_NOPWM);
-//  tle94112.configHB(tle94112.TLE_HB3, tle94112.TLE_HIGH, tle94112.TLE_NOPWM);
-//  tle94112.configHB(tle94112.TLE_HB4, tle94112.TLE_HIGH, tle94112.TLE_NOPWM);
-//#else
-//  // No high current mode, use only HB1 & 2
-//  tle94112.configHB(tle94112.TLE_HB1, tle94112.TLE_HIGH, tle94112.TLE_NOPWM);
-//  tle94112.configHB(tle94112.TLE_HB2, tle94112.TLE_HIGH, tle94112.TLE_NOPWM);
-//#endif
-////Check for error
-//  if(tleCheckDiagnostic()) {
-//    tleDiagnostic();
-//  }
-//}
-
 // ===============================================================
-// Motor control
+// Motor control action
 // ===============================================================
 
-void MotorControl::startMotors() {
+void MotorControl::startMotors(void) {
   motorConfigHB();
   motorPWMStart();
 }
 
-void MotorControl::stopMotors() {
+void MotorControl::stopMotors(void) {
   motorStopHB();
 }
 
-// ===============================================================
-// PWM Setting
-// ===============================================================
-
-void MotorControl::motorPWMStart() {
+void MotorControl::motorPWMStart(void) {
   // First start the PWM 
 }
 
@@ -907,11 +786,11 @@ void MotorControl::showInfo(void) {
       Serial << INFO_FIELD2Y;
     else
       Serial << INFO_FIELD2N;
-    // #3 - Acceleration
-    if(internalStatus[j].useRamp)
-      Serial << INFO_FIELD3Y;
-    else
-      Serial << INFO_FIELD3N;
+//    // #3 - Acceleration
+//    if(internalStatus[j].useRamp)
+//      Serial << INFO_FIELD3Y;
+//    else
+//      Serial << INFO_FIELD3N;
     // #4 - Active freewheeling
     if(internalStatus[j].freeWheeling)
       Serial << INFO_FIELD4Y;
@@ -972,6 +851,12 @@ void MotorControl::showInfo(void) {
       Serial << INFO_FIELD7Y;
     else
       Serial << INFO_FIELD7N;
+    // #3 - Acceleration
+    if(dutyCyclePWM[j].useRamp)
+      Serial << INFO_FIELD3Y;
+    else
+      Serial << INFO_FIELD3N;
+    
     Serial << endl << INfO_TAB_HEADER4 << endl;
   }
 }

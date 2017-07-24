@@ -370,16 +370,6 @@ void serialMessage(String title, String description) {
     showMotorSetting();
     serialMessage(CMD_DIRECTION, commandString);
   }
-  else if(commandString.equals(MOTOR_RAMP)) {
-    motor.setMotorRamp(RAMP_ON);
-    showMotorSetting();
-    serialMessage(CMD_MODE, commandString);
-  }
-  else if(commandString.equals(MOTOR_NORAMP)) {
-    motor.setMotorRamp(RAMP_OFF);
-    showMotorSetting();
-    serialMessage(CMD_MODE, commandString);
-  }
   // =========================================================
   // Freewheeling mode
   // =========================================================
@@ -394,7 +384,7 @@ void serialMessage(String title, String description) {
     serialMessage(CMD_MODE, commandString);
   }
   // =========================================================
-  // Duty cycle settings
+  // Duty cycle and PWM ramp settings
   // =========================================================
   else if(commandString.equals(MANUAL_DC)) {
     motor.setPWMManualDC(MOTOR_MANUAL_DC);
@@ -424,6 +414,18 @@ void serialMessage(String title, String description) {
   }
   else if(commandString.equals(INFO_DC)) {
     showPWMInfo();
+    serialMessage(CMD_MODE, commandString);
+  }
+  else if(commandString.equals(PWM_RAMP)) {
+    motor.setPWMRamp(RAMP_ON);
+    showPWMSetting();
+    lcdShowPWMRamp();
+    serialMessage(CMD_MODE, commandString);
+  }
+  else if(commandString.equals(PWM_NORAMP)) {
+    motor.setPWMRamp(RAMP_OFF);
+    showPWMSetting();
+    lcdShowPWMRamp();
     serialMessage(CMD_MODE, commandString);
   }
   // =========================================================
@@ -472,7 +474,6 @@ void showMotorSetting() {
   lcdShowMotor();
   lcdShowMotorPWM();
   lcdShowFreeWheeling();
-  lcdShowRamp();
   lcdShowDirection();
 }
 
@@ -587,6 +588,23 @@ void showPWMInfo() {
   }
 }
 
+//! Show the acceleration setting for the PWM channel
+void lcdShowPWMRamp() {
+  boolean ramp;
+  
+  if(motor.currentPWM > 0)
+    ramp = motor.dutyCyclePWM[motor.currentPWM - 1].useRamp;
+  else
+    ramp = motor.dutyCyclePWM[0].useRamp;
+
+  lcd.setCursor(0, 1);
+  if(ramp)
+    lcd << "Ramp start/stop";
+  else
+    lcd << "Inst. start/stop";
+}
+
+
 //! Show the freewheeling mode
 void lcdShowFreeWheeling() {
   boolean fw;
@@ -602,22 +620,6 @@ void lcdShowFreeWheeling() {
     lcd << "+";
   else
     lcd << "-";
-}
-
-//! Show the acceleration setting
-void lcdShowRamp() {
-  boolean acc;
-  
-  if(motor.currentMotor > 0)
-    acc = motor.internalStatus[motor.currentMotor - 1].useRamp;
-  else
-    acc = motor.internalStatus[0].useRamp;
-
-  lcd.setCursor(4, 1);
-  if(acc)
-    lcd << "Ramp";
-  else
-    lcd << "Inst";
 }
 
 //! Show the rotatin direction of the motor
