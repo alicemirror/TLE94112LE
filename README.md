@@ -118,7 +118,7 @@ after a _conf_ command call.
 ### Motors settings
 
 Motor|Enabled||Active FW|Dir|PWM
-|-----|-------|---------|---|---|
+|-----|-------|---------|---|---
 | M1  |   No  |   Yes   | CW| No|
 | M2  |   No  |   Yes   | CW| No|
 | M3  |   No  |   Yes   | CW| No|
