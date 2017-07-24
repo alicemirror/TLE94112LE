@@ -14,7 +14,7 @@
 #define _MOTOR
 
 //! Application title shown on startup and after reset
-#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.17"
+#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.20"
 
 #undef _HIGHCURRENT
 #undef _MOTORDEBUG

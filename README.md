@@ -14,9 +14,6 @@ The test platform has been created to manage interactively most (almost all) of
 the features and functions of the motor controller shield. This version
 uses 6 brushed geared micro motors running at 6V max (power is set to 5.5V).
 
-Warning: using and higher power for motors a the LCD backlight should be powered
-bt the Arduino 5V to avoid damage.
-
 ![Test platform detail](images/IMG_20170720_231205.jpg)
 
 ### Functional components
@@ -35,7 +32,7 @@ versions.
 ![Test platform detail](images/IMG_20170529_162044.jpg)
 
 This software is compatible with Arduino UNO R3, Genuino 101 and Arduino 101 but
-the best performances are reached with the Infineon XMC1100 Boot kit Arduino 
+the best performances can be obtained with the Infineon XMC1100 Boot kit Arduino 
 compatible board.
 
 ## Commands
@@ -52,8 +49,8 @@ The available commands are listed below:
 ### Direction control
 - __cw__ : clockwise rotation
 - __ccw__ : counterclockwise rotation
-- __accel__ : Enable the acceleration when motor start
-- __noaccel__ : Disable the acceleration when motor start
+- __accel__ : enable the acceleration when motor start
+- __noaccel__ : disable the acceleration when motor start
 
 ### Action commands
 - __start__ : start all motors

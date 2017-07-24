@@ -65,6 +65,8 @@ class MotorControl {
     motorStatus internalStatus[MAX_MOTORS];
     //! Status of the PWM duty cycle
     pwmStatus dutyCyclePWM[AVAIL_PWM_CHANNELS];
+    //! Compound diagnostic string. Used when motor number is available
+    String diagnosticHeader;
 
     /** 
      * \brief Initialization and motor settings 

@@ -122,7 +122,7 @@ void loop() {
     if(motor.tleCheckDiagnostic()) {
       //! Show the error star
       lcdShowError();
-      motor.tleDiagnostic(j, TLE_MOTOR_RUN);
+      motor.tleDiagnostic();
       lcdClearError();
     }
   }

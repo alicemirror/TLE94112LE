@@ -825,54 +825,95 @@ boolean MotorControl:: tleCheckDiagnostic(void) {
 }
 
 void MotorControl::tleDiagnostic(int motor, String message) {
-    Serial << message << " ";
-    tleDiagnostic(motor);
+  diagnosticHeader = message;
+  tleDiagnostic(motor);
+  diagnosticHeader = "";
 }
 
 void MotorControl::tleDiagnostic(int motor) {
-    Serial << "Motor " << motor + 1 << " - ";
-    tleDiagnostic();
+  int diagnosis = tle94112.getSysDiagnosis();
+
+  if(diagnosis == tle94112.TLE_STATUS_OK) {
+    Serial << diagnosticHeader << " Motor " << motor << " - " << TLE_NOERROR << endl;
+  } // No errors
+  else {
+    #ifndef _IGNORE_OPENLOAD
+    if(tle94112.getSysDiagnosis(tle94112.TLE_LOAD_ERROR) != 0) {
+      Serial << diagnosticHeader << " Motor " << motor << " - " << TLE_ERROR_MSG << endl;
+      Serial << TLE_LOADERROR << endl;
+    } // Open load error
+    #endif
+    if(tle94112.getSysDiagnosis(tle94112.TLE_SPI_ERROR) != 0) {
+      Serial << diagnosticHeader << " Motor " << motor << " - " << TLE_ERROR_MSG << endl;
+      Serial << TLE_SPIERROR << endl;
+    }
+    if(tle94112.getSysDiagnosis(tle94112.TLE_UNDER_VOLTAGE) != 0) {
+      Serial << diagnosticHeader << " Motor " << motor << " - " << TLE_ERROR_MSG << endl;
+      Serial << TLE_UNDERVOLTAGE << endl;
+    }
+    if(tle94112.getSysDiagnosis(tle94112.TLE_OVER_VOLTAGE) != 0) {
+      Serial << diagnosticHeader << " Motor " << motor << " - " << TLE_ERROR_MSG << endl;
+      Serial <<TLE_OVERVOLTAGE << endl;
+    }
+    if(tle94112.getSysDiagnosis(tle94112.TLE_POWER_ON_RESET) != 0) {
+      Serial << diagnosticHeader << " Motor " << motor << " - " << TLE_ERROR_MSG << endl;
+      Serial << TLE_POWERONRESET << endl;
+    }
+    if(tle94112.getSysDiagnosis(tle94112.TLE_TEMP_SHUTDOWN) != 0) {
+      Serial << diagnosticHeader << " Motor " << motor << " - " << TLE_ERROR_MSG << endl;
+      Serial << TLE_TEMPSHUTDOWN << endl;
+    }
+    if(tle94112.getSysDiagnosis(tle94112.TLE_TEMP_WARNING) != 0) {
+      Serial << diagnosticHeader << " Motor " << motor << " - " << TLE_ERROR_MSG << endl;
+      Serial << TLE_TEMPWARNING;
+    }
+    // Clear all possible error conditions        
+    tle94112.clearErrors();
+    diagnosticHeader = "";
+  } // Error condition
 }
 
 void MotorControl::tleDiagnostic() {
   int diagnosis = tle94112.getSysDiagnosis();
 
   if(diagnosis == tle94112.TLE_STATUS_OK) {
-    Serial << TLE_NOERROR << endl;
+    Serial << diagnosticHeader << TLE_NOERROR << endl;
   } // No errors
   else {
+    diagnosticHeader += TLE_ERROR_MSG;
     #ifndef _IGNORE_OPENLOAD
     if(tle94112.getSysDiagnosis(tle94112.TLE_LOAD_ERROR) != 0) {
-      Serial << TLE_ERROR_MSG << endl;
+      Serial << diagnosticHeader << endl;
       Serial << TLE_LOADERROR << endl;
     } // Open load error
     #endif
     if(tle94112.getSysDiagnosis(tle94112.TLE_SPI_ERROR) != 0) {
-      Serial << TLE_ERROR_MSG << endl;
+      Serial << diagnosticHeader << endl;
       Serial << TLE_SPIERROR << endl;
     }
     if(tle94112.getSysDiagnosis(tle94112.TLE_UNDER_VOLTAGE) != 0) {
-      Serial << TLE_ERROR_MSG << endl;
+      Serial << diagnosticHeader << endl;
       Serial << TLE_UNDERVOLTAGE << endl;
     }
     if(tle94112.getSysDiagnosis(tle94112.TLE_OVER_VOLTAGE) != 0) {
-      Serial << TLE_ERROR_MSG << endl;
+      Serial << diagnosticHeader << endl;
       Serial <<TLE_OVERVOLTAGE << endl;
     }
     if(tle94112.getSysDiagnosis(tle94112.TLE_POWER_ON_RESET) != 0) {
-      Serial << TLE_ERROR_MSG << endl;
+      Serial << diagnosticHeader << endl;
       Serial << TLE_POWERONRESET << endl;
     }
     if(tle94112.getSysDiagnosis(tle94112.TLE_TEMP_SHUTDOWN) != 0) {
-      Serial << TLE_ERROR_MSG << endl;
+      Serial << diagnosticHeader << endl;
       Serial << TLE_TEMPSHUTDOWN << endl;
     }
     if(tle94112.getSysDiagnosis(tle94112.TLE_TEMP_WARNING) != 0) {
-      Serial << TLE_ERROR_MSG << endl;
+      Serial << diagnosticHeader << endl;
       Serial << TLE_TEMPWARNING;
     }
     // Clear all possible error conditions        
     tle94112.clearErrors();
+    diagnosticHeader = " ";
   } // Error condition
 }
 
@@ -941,8 +982,11 @@ void MotorControl::showInfo(void) {
     }
     // #2 - DC Min
     Serial << INFO_FIELD5_6A;
-    if(dutyCyclePWM[j].minDC < 100)
-      Serial << " ";
+    if(dutyCyclePWM[j].minDC < 10)
+      Serial << "  ";
+    else 
+      if(dutyCyclePWM[j].minDC < 10)
+        Serial << " ";
     Serial << dutyCyclePWM[j].minDC << INFO_FIELD5_6B;
     // #3 - DC Max
     Serial << INFO_FIELD5_6A;
