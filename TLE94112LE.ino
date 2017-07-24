@@ -37,6 +37,12 @@ ShiftLCD lcd(2, 3, 4);
 uint8_t inputAnalogDC;
 //! Last dutycycle value read from the analog in
 uint8_t lastAnalogDC;
+//! Running global flag
+boolean isRunning;
+//! Running animation frame number
+int runningFrame;
+//! Running frames
+String runningFrames[] = { RUNNING1, RUNNING2, RUNNING3, RUNNING4 };
 
 //! Duty cycle analog read should be ignore (bypass the analog reading)
 #define ANALOG_DCNONE 0
@@ -64,6 +70,8 @@ void setup() {
   pinMode(ANALOG_DCPIN, INPUT);\
   analogReference(INTERNAL);
   inputAnalogDC = lastAnalogDC = readAnalogDutyCycle();
+  isRunning = false;
+  runningFrame = 0;
 
   flashLED();
 
@@ -92,6 +100,9 @@ void loop() {
   int j;
   boolean isRunStatus;
 
+  if(isRunning)
+    lcdRunningAnim();
+
   // -------------------------------------------------------------
   // BLOCK 1 : MOTORS RUNNING STATUS
   // -------------------------------------------------------------
@@ -109,9 +120,13 @@ void loop() {
   // If at least one motor is running check for diagnostic
   if(isRunStatus) {
     if(motor.tleCheckDiagnostic()) {
-      motor.tleDiagnostic();
+      //! Show the error star
+      lcdShowError();
+      motor.tleDiagnostic(j, TLE_MOTOR_RUN);
+      lcdClearError();
     }
   }
+  
   // -------------------------------------------------------------
   // BLOCK 2 : SERIAL PARSING
   // -------------------------------------------------------------
@@ -119,6 +134,7 @@ void loop() {
   if(Serial.available() > 0){
     parseCommand(Serial.readString());
   } // serial available
+
   // -------------------------------------------------------------
   // BLOCK 3 : ANALOG READING
   // -------------------------------------------------------------
@@ -150,7 +166,6 @@ void loop() {
     } // new reading should be updated
   } // Analog reading is active
 
-  flashLED();
 } // Main loop
 
 //! Short loop flashing led for signal
@@ -440,10 +455,14 @@ void serialMessage(String title, String description) {
   else if(commandString.equals(MOTOR_START)) {
     lcdShowStarting();
     motor.startMotors();
+    lcdShowRunning();
+    isRunning = true;
   }
   else if(commandString.equals(MOTOR_STOP)) {
     lcdShowStopping();
     motor.stopMotors();
+    lcdShowHalted();
+    isRunning = false;
   }
   
   else
@@ -615,7 +634,7 @@ void lcdShowFreeWheeling() {
     fw = motor.internalStatus[0].freeWheeling;
 
   lcd.setCursor(0, 1);
-  lcd << "Fw"; 
+  lcd << "FreeWh."; 
   if(fw)
     lcd << "+";
   else
@@ -642,8 +661,8 @@ void lcdShowDirection() {
 //! Show the starting state
 void lcdShowStarting() {
   lcd.clear();
-  lcd.setCursor(9, 1);
-  lcd << "Starting";
+  lcd.setCursor(0, 0);
+  lcd << TLE_MOTOR_STARTING;
 }
 
 //! Show the stopping state
@@ -657,6 +676,35 @@ void lcdShowStopping() {
 void lcdShowRunning() {
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd << TLE_MOTOR_STARTING;
+  lcd << TLE_MOTOR_RUN;
+}
+
+//! Show the halt state
+void lcdShowHalted() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd << TLE_MOTOR_HALT;
+}
+
+//! Show the error star
+void lcdClearError() {
+  lcd.setCursor(0, 15);
+  lcd << " ";
+}
+
+//! Show the error star
+void lcdShowError() {
+  lcd.setCursor(0, 15);
+  lcd << "*";
+  delay(100);
+}
+
+//! Update the running animation on the LCD
+void lcdRunningAnim() {
+  lcd.setCursor(15,0);
+  lcd << runningFrames[runningFrame++];
+  if(runningFrame > 3)
+    runningFrame = 0;
+  delay(100);
 }
 

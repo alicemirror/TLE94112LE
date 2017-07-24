@@ -14,7 +14,7 @@
 #define _MOTOR
 
 //! Application title shown on startup and after reset
-#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.15"
+#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.16"
 
 #undef _HIGHCURRENT
 #undef _MOTORDEBUG
@@ -89,6 +89,12 @@
 #define TLE_MOTOR_STARTING "Starting"
 #define TLE_MOTOR_STOPPING "Stopping"
 #define TLE_MOTOR_HALT "Sys halted"
+#define TLE_MOTOR_RUN "Running"
+
+#define RUNNING1 "|"
+#define RUNNING2 "("
+#define RUNNING3 "|"
+#define RUNNING4 ")"
 
 // ======================================================================
 //        LCD String

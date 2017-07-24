@@ -786,22 +786,17 @@ void MotorControl::showInfo(void) {
       Serial << INFO_FIELD2Y;
     else
       Serial << INFO_FIELD2N;
-//    // #3 - Acceleration
-//    if(internalStatus[j].useRamp)
-//      Serial << INFO_FIELD3Y;
-//    else
-//      Serial << INFO_FIELD3N;
-    // #4 - Active freewheeling
+    // #3 - Active freewheeling
     if(internalStatus[j].freeWheeling)
       Serial << INFO_FIELD4Y;
     else
       Serial << INFO_FIELD4N;
-    // #8 - Direction
+    // #4 - Direction
     if(internalStatus[j].motorDirection == MOTOR_DIRECTION_CW)
       Serial << INFO_FIELD8A;
     else
       Serial << INFO_FIELD8B;
-    // #9 - PWM
+    // #5 - PWM
     switch(internalStatus[j].channelPWM) {
       case tle94112.TLE_NOPWM:
         Serial << INFO_FIELD9_NO;
@@ -851,7 +846,7 @@ void MotorControl::showInfo(void) {
       Serial << INFO_FIELD7Y;
     else
       Serial << INFO_FIELD7N;
-    // #3 - Acceleration
+    // #5 - Acceleration
     if(dutyCyclePWM[j].useRamp)
       Serial << INFO_FIELD3Y;
     else
