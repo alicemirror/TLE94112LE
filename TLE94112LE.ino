@@ -647,14 +647,14 @@ void lcdShowStarting() {
 //! Show the stopping state
 void lcdShowStopping() {
   lcd.clear();
-  lcd.setCursor(9, 1);
-  lcd << "Stopping";
+  lcd.setCursor(0, 0);
+  lcd << TLE_MOTOR_STOPPING;
 }
 
 //! Show the running state
 void lcdShowRunning() {
   lcd.clear();
-  lcd.setCursor(9, 1);
-  lcd << "Starting";
+  lcd.setCursor(0, 0);
+  lcd << TLE_MOTOR_STARTING;
 }
 

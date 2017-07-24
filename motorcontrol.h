@@ -256,6 +256,21 @@ class MotorControl {
      */
     void tleDiagnostic(void);
 
+    /**
+     * Check the error condition and detect the kind of error (if any) then reset it
+     * 
+     * \ param motor The motor ID (base 0) that has generated the error
+     */
+    void tleDiagnostic(int motor);
+
+    /**
+     * Check the error conditions and detect the kind of error (if any) then reset it
+     * 
+     * \param motor The motor ID (base 0) that has generated the error
+     * \param message A generic string message for better explanation
+     */
+    void tleDiagnostic(int motor, String message);
+
 };
 
 #endif

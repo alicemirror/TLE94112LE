@@ -313,10 +313,19 @@ void MotorControl::setPWMMaxDC(uint8_t dc) {
 
 void MotorControl::startMotors() {
   motorConfigHB();
+  motorPWMStart();
 }
 
 void MotorControl::stopMotors() {
   motorStopHB();
+}
+
+// ===============================================================
+// PWM Setting
+// ===============================================================
+
+void MotorControl::motorPWMStart() {
+  // First start the PWM 
 }
 
 // ===============================================================
@@ -327,6 +336,8 @@ void MotorControl::motorConfigHB(void) {
   int j;
     for(j = 0; j < MAX_MOTORS; j++) {
       motorConfigHB(j);
+      if(tleCheckDiagnostic())
+        tleDiagnostic(j, TLE_MOTOR_STARTING);
     }
 }
 
@@ -344,6 +355,8 @@ void MotorControl::motorStopHB(void) {
     for(j = 0; j < MAX_MOTORS; j++) {
       if(internalStatus[j].isRunning)
         motorStopHB(j);
+        if(tleCheckDiagnostic())
+          tleDiagnostic(j, TLE_MOTOR_STOPPING);
     }
 }
 
@@ -829,43 +842,48 @@ boolean MotorControl:: tleCheckDiagnostic(void) {
     return true;
 }
 
+void MotorControl::tleDiagnostic(int motor, String message) {
+    Serial << message << " ";
+    tleDiagnostic(motor);
+}
+
+void MotorControl::tleDiagnostic(int motor) {
+    Serial << "Motor " << motor + 1 << " - ";
+    tleDiagnostic();
+}
+
 void MotorControl::tleDiagnostic() {
   int diagnosis = tle94112.getSysDiagnosis();
 
   if(diagnosis == tle94112.TLE_STATUS_OK) {
-    Serial.println(TLE_NOERROR);
+    Serial << TLE_NOERROR << endl;
   } // No errors
   else {
-    // Open load error can be ignored
+    // Check for all error conditions
+    Serial << TLE_ERROR_MSG << endl;
+    #ifndef _IGNORE_OPENLOAD
     if(tle94112.getSysDiagnosis(tle94112.TLE_LOAD_ERROR)) {
-#ifndef _IGNORE_OPENLOAD
-      Serial.println(TLE_ERROR_MSG);
-      Serial.println(TLE_LOADERROR);
-      Serial.println("");
-#endif
+      Serial << TLE_LOADERROR << endl;
     } // Open load error
-    else {
-      Serial.println(TLE_ERROR_MSG);
-      if(tle94112.getSysDiagnosis(tle94112.TLE_SPI_ERROR)) {
-        Serial.println(TLE_SPIERROR);
-      }
-      if(tle94112.getSysDiagnosis(tle94112.TLE_UNDER_VOLTAGE)) {
-        Serial.println(TLE_UNDERVOLTAGE);
-      }
-      if(tle94112.getSysDiagnosis(tle94112.TLE_OVER_VOLTAGE)) {
-        Serial.println(TLE_OVERVOLTAGE);
-      }
-      if(tle94112.getSysDiagnosis(tle94112.TLE_POWER_ON_RESET)) {
-        Serial.println(TLE_POWERONRESET);
-      }
-      if(tle94112.getSysDiagnosis(tle94112.TLE_TEMP_SHUTDOWN)) {
-        Serial.println(TLE_TEMPSHUTDOWN);
-      }
-      if(tle94112.getSysDiagnosis(tle94112.TLE_TEMP_WARNING)) {
-        Serial.println(TLE_TEMPWARNING);
-      }
-      Serial.println("");
-    } // Any other error
+    #endif
+    if(tle94112.getSysDiagnosis(tle94112.TLE_SPI_ERROR)) {
+      Serial << TLE_SPIERROR << endl;
+    }
+    if(tle94112.getSysDiagnosis(tle94112.TLE_UNDER_VOLTAGE)) {
+      Serial << TLE_UNDERVOLTAGE << endl;
+    }
+    if(tle94112.getSysDiagnosis(tle94112.TLE_OVER_VOLTAGE)) {
+      Serial <<TLE_OVERVOLTAGE << endl;
+    }
+    if(tle94112.getSysDiagnosis(tle94112.TLE_POWER_ON_RESET)) {
+      Serial << TLE_POWERONRESET << endl;
+    }
+    if(tle94112.getSysDiagnosis(tle94112.TLE_TEMP_SHUTDOWN)) {
+      Serial << TLE_TEMPSHUTDOWN << endl;
+    }
+    if(tle94112.getSysDiagnosis(tle94112.TLE_TEMP_WARNING)) {
+      Serial << TLE_TEMPWARNING;
+    }
     // Clear all possible error conditions        
     tle94112.clearErrors();
   } // Error condition

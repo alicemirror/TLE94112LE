@@ -21,7 +21,7 @@
 
 //! Avoid too many openload error messages when starting acceleration
 //! by default it is ignored
-#define _IGNORE_OPENLOAD
+#undef _IGNORE_OPENLOAD
 
 #define INVERT_DIRECTION_DELAY 300  ///< Delay in ms when the motor should invert direction
 #define ACCELERATION_DELAY 5        ///< Delay between acceleration steps
@@ -71,16 +71,24 @@
   #define calcHB1(x) ((x - 1) * 2 + 1)
 #endif
 
+// ======================================================================
+//        Generic Strings
+// ======================================================================
+
 //! Error title
-#define TLE_ERROR_MSG "TLE94112 Error"
-#define TLE_NOERROR "No Error"
-#define TLE_SPIERROR "SPI"
-#define TLE_LOADERROR "Open"
-#define TLE_UNDERVOLTAGE "Under V"
-#define TLE_OVERVOLTAGE "Over V"
-#define TLE_POWERONRESET "Pwr rst" 
-#define TLE_TEMPSHUTDOWN "Temp shutdown"
-#define TLE_TEMPWARNING "Warn high temp"
+#define TLE_ERROR_MSG "TLE94112 Diagnostic Status :"
+#define TLE_NOERROR "No Errors"
+#define TLE_SPIERROR "SPI communication error"
+#define TLE_LOADERROR "Open Load error"
+#define TLE_UNDERVOLTAGE "Under Voltage error"
+#define TLE_OVERVOLTAGE "Over Voltage error"
+#define TLE_POWERONRESET "Power Reset error" 
+#define TLE_TEMPSHUTDOWN "Temperatuire shutdown"
+#define TLE_TEMPWARNING "Warning high temperature"
+
+#define TLE_MOTOR_STARTING "Starting"
+#define TLE_MOTOR_STOPPING "Stopping"
+#define TLE_MOTOR_HALT "Sys halted"
 
 // ======================================================================
 //        LCD String
