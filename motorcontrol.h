@@ -67,6 +67,12 @@ class MotorControl {
     pwmStatus dutyCyclePWM[AVAIL_PWM_CHANNELS];
     //! Compound diagnostic string. Used when motor number is available
     String diagnosticHeader;
+    //! The last duty cycle value read from the analog input (manual duty cycle settings)
+    uint8_t lastAnalogDC;
+    //! The previous duty cycle value read from the analog input (manual duty cycle settings)
+    uint8_t prevAnalogDC;
+    //! Global flag is one (or more) of the PWM channels are set to manualDC
+    boolean hasManualDC;
 
     /** 
      * \brief Initialization and motor settings 
@@ -143,12 +149,18 @@ class MotorControl {
     void motorPWMAccelerate(int channel);
     
     /**
-     * \brief Helt PWM channels with a deceleration cycle
+     * \brief Halt PWM channels with a deceleration cycle
      * 
      * \param channel the selectedPWM channel
      */
     void motorPWMDecelerate(int channel);
-    
+
+    /**
+     * \brief Change the current duty cicle value through acceleration/deceleration
+     * for the PWM channels that has set the manual duty cycle
+     */
+    void motorPWMAnalogDC(void);
+
     /**
      * \bruief Run PWM channel immediately setting the max duty cycle
      * 

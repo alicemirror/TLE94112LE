@@ -167,29 +167,6 @@ void MotorControl::setPWMRamp(boolean acc) {
   }
 }
 
-  // Acceleration loop  
-//  for(j = minDC; j <= maxDC; j++) {
-//    // Update the speed
-//    tle94112.configPWM(tle94112.TLE_PWM1, tle94112.TLE_FREQ200HZ, j);
-//  //Check for error
-//  if(tleCheckDiagnostic()) {
-//    tleDiagnostic();
-//  }
-//    delay(accdelay);
-//  }
-//
-//  // Deceleration loop  
-//  for(j = maxDC; j > minDC; j--) {
-//    // Update the speed
-//    tle94112.configPWM(tle94112.TLE_PWM1, tle94112.TLE_FREQ200HZ, j);
-//  //Check for error
-//  if(tleCheckDiagnostic()) {
-//    tleDiagnostic();
-//  }
-//    delay(accdelay);
-//  }
-//}
-
 // ===============================================================
 // Motor control action
 // ===============================================================
@@ -204,11 +181,40 @@ void MotorControl::stopMotors(void) {
   motorStopHB();
 }
 
-void MotorControl::motorPWMStart(void) {
+void MotorControl::motorPWMAnalogDC(void) {
   int j;
   
   // Loop on the PWM channels
   for (j = 0; j < AVAIL_PWM_CHANNELS; j++) {
+    // See if the channel is set for manual dutycycle
+    if(dutyCyclePWM[j].manDC) {
+      // If new value is bigger than previous, arrange
+      // the DC value for acceleration else do the opposite
+      if(lastAnalogDC > prevAnalogDC) {
+        dutyCyclePWM[j].minDC = prevAnalogDC;
+        dutyCyclePWM[j].maxDC = lastAnalogDC;
+        motorPWMAccelerate(j);
+      }
+      else {
+        dutyCyclePWM[j].maxDC = prevAnalogDC;
+        dutyCyclePWM[j].minDC = lastAnalogDC;
+        motorPWMDecelerate(j);
+      }
+    }
+  }
+}
+
+void MotorControl::motorPWMStart(void) {
+  int j;
+
+  hasManualDC = false;
+  
+  // Loop on the PWM channels
+  for (j = 0; j < AVAIL_PWM_CHANNELS; j++) {
+    // See if the channel is set for manual dutycycle
+    if(dutyCyclePWM[j].manDC)
+      hasManualDC = true; // Save the global flag for the program logic
+    // Start PWM channel of acceleration cycle
     if(dutyCyclePWM[j].useRamp) {
       // Should manage acceleration
       motorPWMAccelerate(j);
@@ -985,7 +991,7 @@ void MotorControl::showInfo(void) {
     if(dutyCyclePWM[j].minDC < 10)
       Serial << "  ";
     else 
-      if(dutyCyclePWM[j].minDC < 10)
+      if(dutyCyclePWM[j].minDC < 100)
         Serial << " ";
     Serial << dutyCyclePWM[j].minDC << INFO_FIELD5_6B;
     // #3 - DC Max

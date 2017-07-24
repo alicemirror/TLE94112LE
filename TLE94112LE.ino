@@ -161,7 +161,11 @@ void loop() {
           lcdShowDutyCycleMax();
          break;
         case ANALOG_DCMAN:
-         break;
+          lcdShowDutyCycleValue();
+          motor.prevAnalogDC = motor.lastAnalogDC;
+          motor.lastAnalogDC = inputAnalogDC;
+          motor.motorPWMAnalogDC();
+          break;
       } //  update switch
     } // new reading should be updated
   } // Analog reading is active
@@ -206,7 +210,7 @@ void serialMessage(String title, String description) {
     readings += analogRead(ANALOG_DCPIN);
   }
   readings /= 5;
-  delay(250);
+  delay(150);
 
   return map(readings, MIN_ANALOG_RANGE, MAX_ANALOG_RANGE, DUTYCYCLE_MIN, DUTYCYCLE_MAX);
  }
@@ -406,6 +410,7 @@ void serialMessage(String title, String description) {
     // Initialize the max duty cycle to the last analog read
     // by default
     motor.setPWMMaxDC(inputAnalogDC);
+    motor.setPWMMinDC(DUTYCYCLE_MIN);
     showPWMSetting();
     lcdShowDutyCycleManual();
     serialMessage(CMD_MODE, commandString);
@@ -460,12 +465,15 @@ void serialMessage(String title, String description) {
     motor.startMotors();
     lcdShowRunning();
     isRunning = true;
+    if(motor.hasManualDC)
+      analogDutyCycle = ANALOG_DCMAN;
   }
   else if(commandString.equals(MOTOR_STOP)) {
     lcdShowStopping();
     motor.stopMotors();
     lcdShowHalted();
     isRunning = false;
+    analogDutyCycle = ANALOG_DCNONE;
   }
   
   else
@@ -565,6 +573,15 @@ void lcdShowDutyCycleManual() {
 void lcdShowDutyCycleMin() {
   lcd.setCursor(0, 1);
   lcd << "DC min =";
+  if(inputAnalogDC < 100)
+    lcd.print(" ");
+  lcd << inputAnalogDC;
+}
+
+//! Set duty cycle min value from analog input
+void lcdShowDutyCycleValue() {
+  lcd.setCursor(0, 1);
+  lcd << "DutyCycle =";
   if(inputAnalogDC < 100)
     lcd.print(" ");
   lcd << inputAnalogDC;

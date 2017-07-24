@@ -14,7 +14,7 @@
 #define _MOTOR
 
 //! Application title shown on startup and after reset
-#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.20"
+#define APP_TITLE "Infineon TLE94112LE Test Ver.1.0.21 RC"
 
 #undef _HIGHCURRENT
 #undef _MOTORDEBUG
@@ -46,7 +46,7 @@
 
 #define DUTYCYCLE_MIN 0     ///< Minimum duty cycle for motor start. Depends on motor characteristics
 #define DUTYCYCLE_MAX 255   ///< Maximum duty cycle
-#define RAMP_STEP_DELAY 5   ///< Delay (ms) between steps during an acceleration/deceleration cycle
+#define RAMP_STEP_DELAY 2   ///< Delay (ms) between steps during an acceleration/deceleration cycle
 
 #define AVAIL_PWM_CHANNELS 3  ///< Number of available PWM channels (excluding the NOPWM mode)
 #define PWM80_CHID 1          ///< ID for PWM channel 80 Hz
@@ -92,10 +92,10 @@
 #define TLE_MOTOR_HALT "Sys halted"
 #define TLE_MOTOR_RUN "Running"
 
-#define RUNNING1 "|"
-#define RUNNING2 "("
-#define RUNNING3 "|"
-#define RUNNING4 ")"
+#define RUNNING1 "("
+#define RUNNING2 "^"
+#define RUNNING3 ")"
+#define RUNNING4 "v"
 
 // ======================================================================
 //        LCD String
