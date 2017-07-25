@@ -222,7 +222,13 @@ void serialMessage(String title, String description) {
  * \param commandString the string coming from the serial
  *  ***********************************************************
  */
- void parseCommand(String commandString) {
+ void parseCommand(String cmdString) {
+  int cmdlen;
+  String commandString;
+
+  commandString = cmdString;
+  cmdlen = cmdString.length() - 2;
+  commandString.remove(cmdlen);
 
   // First disable the analog pot reading. Should be active
   // only when the duty cycle is set (or when running in manual
