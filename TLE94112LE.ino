@@ -28,7 +28,7 @@ MotorControl motor;
 #define MIN_ANALOG_RANGE 0
 
 //! If defined every command is echoed on the serial terminal
-#undef _SERIAL_ECHO
+#define _SERIAL_ECHO
 
 //! LCD library initialisation
 ShiftLCD lcd(2, 3, 4);
