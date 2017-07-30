@@ -65,7 +65,7 @@
   //! on the motor number
   #define calcHB1(x) ((x - 1) * 4 + 1)
 #else
-  //! In normal current mode every motor uses two half bridges
+  //! In normal mode every motor uses two half bridges
   #define MAX_MOTORS 6
   //! Calculate the first half bridge number depending
   //! on the motor number
@@ -79,17 +79,17 @@
 //! Error title
 #define TLE_ERROR_MSG "TLE94112 Diagnostic Status :"
 #define TLE_NOERROR "No Errors"
-#define TLE_SPIERROR "SPI communication error"
-#define TLE_LOADERROR "Open Load error"
-#define TLE_UNDERVOLTAGE "Under Voltage error"
-#define TLE_OVERVOLTAGE "Over Voltage error"
-#define TLE_POWERONRESET "Power Reset error" 
-#define TLE_TEMPSHUTDOWN "Temperatuire shutdown"
-#define TLE_TEMPWARNING "Warning high temperature"
+#define TLE_SPIERROR "SPI communication"
+#define TLE_LOADERROR "Open Load"
+#define TLE_UNDERVOLTAGE "Under Voltage"
+#define TLE_OVERVOLTAGE "Over Voltage"
+#define TLE_POWERONRESET "Power Reset" 
+#define TLE_TEMPSHUTDOWN "Temp shutdown"
+#define TLE_TEMPWARNING "Warning too hot"
 
 #define TLE_MOTOR_STARTING "Starting"
 #define TLE_MOTOR_STOPPING "Stopping"
-#define TLE_MOTOR_HALT "Sys halted"
+#define TLE_MOTOR_HALT "Halted"
 #define TLE_MOTOR_RUN "Running"
 
 #define RUNNING1 "("
